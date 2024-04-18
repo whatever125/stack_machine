@@ -1,0 +1,12 @@
+[{"opcode": "word", "arg": 1, "term": {"line": 2, "position": 0, "symbol": "WORD    1"}},
+ {"opcode": "push", "arg": 11, "term": {"line": 4, "position": 0, "symbol": "PUSH    break"}},
+ {"opcode": "push", "arg": 0, "term": {"line": 5, "position": 0, "symbol": "PUSH    port"}},
+ {"opcode": "in", "term": {"line": 6, "position": 0, "symbol": "IN"}},
+ {"opcode": "jz", "term": {"line": 7, "position": 0, "symbol": "JZ"}},
+ {"opcode": "push", "arg": 11, "term": {"line": 8, "position": 0, "symbol": "PUSH    break"}},
+ {"opcode": "swap", "term": {"line": 9, "position": 0, "symbol": "SWAP"}},
+ {"opcode": "push", "arg": 0, "term": {"line": 10, "position": 0, "symbol": "PUSH    port"}},
+ {"opcode": "out", "term": {"line": 11, "position": 0, "symbol": "OUT"}},
+ {"opcode": "push", "arg": 1, "term": {"line": 12, "position": 0, "symbol": "PUSH    loop"}},
+ {"opcode": "jmp", "term": {"line": 13, "position": 0, "symbol": "JMP"}},
+ {"opcode": "halt", "term": {"line": 15, "position": 0, "symbol": "HALT"}}]
