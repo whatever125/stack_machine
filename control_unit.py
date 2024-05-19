@@ -19,129 +19,146 @@ class ControlUnit:
         self._micro_program_counter = 0
         self._microprogram = [
             # 0 - INSTRUCTION FETCH
-            [Signal.LATCH_AR_PC],
+            [Signal.LATCH_AR, Signal.SEL_AR_PC],
             # 1
-            [Signal.LATCH_MPC_OPCODE],
+            [Signal.LATCH_MPC, Signal.SEL_MPC_OPCODE],
 
             # 2 - NOP
-            [Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+            [Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 3 - WORD
-            [Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+            [Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 4 - PUSH
             [Signal.DS_PUSH,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 5
-            [Signal.LATCH_TOS_MEMORY,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+            [Signal.LATCH_TOS, Signal.SEL_TOS_MEMORY,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 6 - INC
             [Signal.ALU_INC, Signal.ALU_SUM, Signal.ALU_RIGHT_OP_ZERO,
-             Signal.LATCH_TOS_ALU,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
 
             # 7 - DEC
             [Signal.ALU_INC, Signal.ALU_SUB, Signal.ALU_RIGHT_OP_ZERO,
-             Signal.LATCH_TOS_ALU,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 8 - DROP
-            [Signal.LATCH_TOS_DS,
+            [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
              Signal.DS_POP,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 9 - SWAP TODO
-            [Signal.LATCH_TOS_DS,  # Save TOS
+            [Signal.LATCH_TOS, Signal.SEL_TOS_DS,  # Save TOS
              Signal.DS_POP,  # Pop NOS to TOS
-             Signal.LATCH_AR_TOS,  # Move saved TOS to AR (Auxiliary Register)
+             Signal.LATCH_AR, Signal.SEL_AR_TOS,  # Move saved TOS to AR (Auxiliary Register)
              Signal.DS_PUSH,  # Push AR to NOS
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 10 - OVER TODO
-            [Signal.LATCH_AR_TOS,  # Save TOS
+            [Signal.LATCH_AR, Signal.SEL_AR_TOS,  # Save TOS
              Signal.DS_PUSH,  # Push NOS to the stack
-             Signal.LATCH_AR_TOS,  # Restore TOS from AR
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_AR, Signal.SEL_AR_TOS,  # Restore TOS from AR
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 11 - ADD
             [Signal.ALU_SUM, Signal.ALU_RIGHT_OP_NOS,
-             Signal.LATCH_TOS_ALU,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 12
             [Signal.DS_POP,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 13 - SUB
             [Signal.ALU_SUB, Signal.ALU_RIGHT_OP_NOS,
-             Signal.LATCH_TOS_ALU,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 14
             [Signal.DS_POP,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 15 - MUL
             [Signal.ALU_MUL, Signal.ALU_RIGHT_OP_NOS,
-             Signal.LATCH_TOS_ALU,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 16
             [Signal.DS_POP,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 17 - DIV
             [Signal.ALU_DIV, Signal.ALU_RIGHT_OP_NOS,
-             Signal.LATCH_TOS_ALU,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 18
             [Signal.DS_POP,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 19 - LOAD
-            [Signal.LATCH_AR_TOS,
-             Signal.LATCH_MPC_NEXT],
+            [Signal.LATCH_AR, Signal.SEL_AR_TOS,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 20
-            [Signal.LATCH_TOS_MEMORY,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+            [Signal.LATCH_TOS, Signal.SEL_TOS_MEMORY,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 21 - SAVE
-            [Signal.LATCH_AR_TOS,
-             Signal.LATCH_MPC_NEXT],
+            [Signal.LATCH_AR, Signal.SEL_AR_TOS,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 22
             [Signal.MEMORY,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 23
             [Signal.DS_POP,
-             Signal.LATCH_MPC_NEXT],
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 24
-            [Signal.LATCH_TOS_DS,
-             Signal.LATCH_MPC_NEXT],
+            [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # 25
             [Signal.DS_POP,
-             Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-            # IN
-            [Signal.LATCH_TOS, Signal.LATCH_MPC_NEXT],
-            [Signal.DATA_MEMORY_WR_INPUT, Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
-            # OUT
-            [Signal.LATCH_TOS, Signal.LATCH_MPC_NEXT],
-            [Signal.OUTPUT, Signal.LATCH_PC_NEXT, Signal.LATCH_MPC_ZERO],
+            # IN TODO
+            [Signal.LATCH_TOS, Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            [Signal.DATA_MEMORY_WR_INPUT,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+            # OUT TODO
+            [Signal.LATCH_TOS, Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            [Signal.OUTPUT,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-            # _ - JMP
-            [Signal.LATCH_PC_JMP,
-             Signal.LATCH_MPC_NEXT],
+            # _ - JMP TODO
+            [Signal.LATCH_PC, Signal.SEL_PC_JMP,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # _
-            [Signal.LATCH_TOS_DS,
-             Signal.LATCH_MPC_NEXT],
+            [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # _
             [Signal.DS_POP,
-             Signal.LATCH_MPC_ZERO],
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-            # _ - JZ
-            [Signal.LATCH_PC_JZ,
-             Signal.LATCH_MPC_NEXT],
+            # _ - JZ TODO
+            [Signal.LATCH_PC, Signal.SEL_PC_JZ,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # _
-            [Signal.LATCH_TOS_ALU,
-             Signal.LATCH_MPC_ZERO],
+            [Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # _ - HALT
             [Signal.HALT]
