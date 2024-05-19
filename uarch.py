@@ -17,7 +17,8 @@ class Signal(StrEnum):
 
     LATCH_PC = auto()
     SEL_PC_NEXT = auto()
-    SEL_PC_JMP_TYPE = auto()
+    SEL_PC_JMP = auto()
+    SEL_PC_JZ = auto()
 
     LATCH_MPC = auto()
     SEL_MPC_ZERO = auto()

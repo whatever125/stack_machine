@@ -40,19 +40,21 @@ class ControlUnit:
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 6 - INC
-            [Signal.ALU_INC, Signal.ALU_SUM, Signal.ALU_RIGHT_OP_ZERO,
+            [Signal.ALU_SUM, Signal.ALU_RIGHT_OP_ZERO, Signal.ALU_INC,
              Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
-             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 7 - DEC
-            [Signal.ALU_INC, Signal.ALU_SUB, Signal.ALU_RIGHT_OP_ZERO,
+            [Signal.ALU_SUM, Signal.ALU_RIGHT_OP_ZERO, Signal.ALU_DEC,
              Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
              Signal.LATCH_PC, Signal.SEL_PC_NEXT,
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # 8 - DROP
             [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
-             Signal.DS_POP,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            [Signal.DS_POP,
              Signal.LATCH_PC, Signal.SEL_PC_NEXT,
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
@@ -132,18 +134,26 @@ class ControlUnit:
              Signal.LATCH_PC, Signal.SEL_PC_NEXT,
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-            # IN TODO
-            [Signal.LATCH_TOS, Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-            [Signal.DATA_MEMORY_WR_INPUT,
-             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
-             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-            # OUT TODO
-            [Signal.LATCH_TOS, Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-            [Signal.OUTPUT,
+            # _ - IN
+            [Signal.LATCH_TOS, Signal.SEL_TOS_INPUT,
              Signal.LATCH_PC, Signal.SEL_PC_NEXT,
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-            # _ - JMP TODO
+            # _ - OUT
+            [Signal.OUTPUT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            #
+            [Signal.DS_POP,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            #
+            [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            #
+            [Signal.DS_POP,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+             Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+            # _ - JMP
             [Signal.LATCH_PC, Signal.SEL_PC_JMP,
              Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # _
@@ -151,13 +161,21 @@ class ControlUnit:
              Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # _
             [Signal.DS_POP,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-            # _ - JZ TODO
+            # _ - JZ
             [Signal.LATCH_PC, Signal.SEL_PC_JZ,
              Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
             # _
-            [Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
+            [Signal.DS_POP,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            # _
+            [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+             Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+            # _
+            [Signal.DS_POP,
+             Signal.LATCH_PC, Signal.SEL_PC_NEXT,
              Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
             # _ - HALT
