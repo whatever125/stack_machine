@@ -4,19 +4,17 @@ from uarch import Signal
 
 
 class ControlUnit:
-    _program_counter: int = None
     _data_path: DataPath = None
-    _current_tick: int = None
-
+    _program_counter: int = None
     _micro_program_counter: int = None
+    _current_tick: int = None
     _microprogram: list = None
 
     def __init__(self, data_path: DataPath) -> None:
-        self._program_counter = 0
         self._data_path = data_path
-        self._current_tick = 0
-
+        self._program_counter = 0
         self._micro_program_counter = 0
+        self._current_tick = 0
         self._microprogram = [
             # 0 - INSTRUCTION FETCH
             [Signal.LATCH_AR, Signal.SEL_AR_PC],
@@ -227,63 +225,43 @@ class ControlUnit:
             match signal:
                 case Signal.DS_PUSH:
                     pass
+                case Signal.DS_POP:
+                    pass
+                case Signal.LATCH_TOS:
+                    pass
+                case Signal.LATCH_AR:
+                    pass
+                case Signal.LATCH_PC:
+                    self._latch_program_counter(micro_instruction)
+                case Signal.LATCH_MPC:
+                    self._latch_micro_program_counter(micro_instruction)
+                case Signal.OUT:
+                    pass
+                case Signal.WRITE:
+                    pass
+                case _:
+                    pass
 
-    def _signal_latch_program_counter(self, sel_next: bool) -> None:
-        if sel_next:
+    def _latch_program_counter(self, micro_instruction: list[Signal]) -> None:
+        if Signal.SEL_PC_NEXT in micro_instruction:
             self._program_counter += 1
-        else:
-            instr = self._program_memory[self._program_counter]
-            if "arg" in instr:
-                address = instr["arg"]
-                self._program_counter = address
+        elif Signal.SEL_PC_JMP in micro_instruction:
+            self._program_counter = self._data_path.tos
+        elif Signal.SEL_PC_JZ in micro_instruction:
+            if self._data_path.zero():
+                self._program_counter = self._data_path.tos
             else:
-                raise Exception(f"internal error: no arg in {instr}")
+                self._program_counter += 1
 
-    def decode_and_execute_instruction(self) -> None:
-        if self._program_counter >= self._program_memory_size:
-            raise Exception("internal error: out of program memory")
-
-        instr = self._program_memory[self._program_counter]
-        opcode = instr["opcode"]
-
-        match opcode:
-            case Opcode.RIGHT | Opcode.LEFT:
-                self._data_path.signal_latch_data_addr(opcode)
-                self._signal_latch_program_counter(sel_next=True)
-                self._tick()
-
-            case Opcode.INC | Opcode.DEC | Opcode.INPUT:
-                self._data_path.signal_latch_acc()
-                self._tick()
-
-                self._data_path.signal_wr(opcode)
-                self._signal_latch_program_counter(sel_next=True)
-                self._tick()
-
-            case Opcode.PRINT:
-                self._data_path.signal_latch_acc()
-                self._tick()
-
-                self._data_path.signal_output()
-                self._signal_latch_program_counter(sel_next=True)
-                self._tick()
-
-            case Opcode.HALT:
-                raise StopIteration()
-
-            case Opcode.JMP:
-                self._signal_latch_program_counter(sel_next=False)
-                self._tick()
-
-            case Opcode.JZ:
-                self._data_path.signal_latch_acc()
-                self._tick()
-
-                if self._data_path.zero():
-                    self._signal_latch_program_counter(sel_next=False)
-                else:
-                    self._signal_latch_program_counter(sel_next=True)
-                self._tick()
+    def _latch_micro_program_counter(self, micro_instruction: list[Signal]) -> None:
+        if Signal.SEL_MPC_ZERO in micro_instruction:
+            self._micro_program_counter = 0
+        elif Signal.SEL_MPC_OPCODE in micro_instruction:
+            data = self._data_path.read()
+            opcode = data["opcode"]
+            self._micro_program_counter = self._opcode_to_mpc(opcode)
+        elif Signal.SEL_MPC_NEXT in micro_instruction:
+            self._micro_program_counter += 1
 
     @property
     def current_tick(self):

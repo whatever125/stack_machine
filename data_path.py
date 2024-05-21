@@ -4,6 +4,7 @@ from isa import Opcode
 class DataPath:
     _memory_size: int = None
     _memory: list[dict] = None
+    _address_register: int = None
 
     _input_buffer: list = None
     _output_buffer: list = None
@@ -16,6 +17,7 @@ class DataPath:
         self._memory = [{"opcode": Opcode.NOP}] * memory_size
         for index, instruction in enumerate(program):
             self._memory[index] = program[index]
+        self._address_register = 0
 
         self._input_buffer = input_buffer
         self._output_buffer = []
@@ -60,9 +62,16 @@ class DataPath:
         symbol = chr(self._accumulator)
         self._output_buffer.append(symbol)
 
+    def read(self) -> dict:
+        return self._memory[self._address_register]
+
     def zero(self) -> bool:
         return self._tos == 0
 
     @property
-    def output_buffer(self):
+    def output_buffer(self) -> list:
         return self._output_buffer
+
+    @property
+    def tos(self) -> int:
+        return self._tos
