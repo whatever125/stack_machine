@@ -34,8 +34,8 @@ class Signal(StrEnum):
     ALU_RIGHT_OP_NOS = auto()
     ALU_RIGHT_OP_ZERO = auto()
 
-    OUTPUT = auto()
-    MEMORY = auto()
+    OUT = auto()
+    WRITE = auto()
 
     HALT = auto()
 
