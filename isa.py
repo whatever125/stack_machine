@@ -18,19 +18,15 @@ class Opcode(StrEnum):
     NOP = auto()
     WORD = auto()
 
-    # TOS with arg
-    PUSH = auto()
-
-    # TOS without arg
-    INC = auto()
-    DEC = auto()
-
     # stack ops
-    DROP = auto()
+    PUSH = auto()
+    POP = auto()
     SWAP = auto()
     OVER = auto()
 
     # math
+    INC = auto()
+    DEC = auto()
     ADD = auto()
     SUB = auto()
     MUL = auto()
