@@ -38,7 +38,7 @@ class ControlUnit:
             case Opcode.HALT: return 42
             case _: return 0
 
-    def dispatch_micro_instruction(self):
+    def _dispatch_micro_instruction(self):
         micro_instruction = self._microprogram[self._micro_program_counter]
         logging.debug(micro_instruction)
         for signal in micro_instruction:
@@ -96,10 +96,6 @@ class ControlUnit:
     def program_counter(self):
         return self._program_counter
 
-    @property
-    def current_tick(self):
-        return self._current_tick
-
     def print_state(self):
         logging.debug("\t".join(["PC", "MPC", "AR", "BR", "TOS", "NOS"]))
         logging.debug("\t".join(map(str, [self.program_counter, self._micro_program_counter,
@@ -111,7 +107,7 @@ class ControlUnit:
         while True:
             try:
                 self.print_state()
-                self.dispatch_micro_instruction()
+                self._dispatch_micro_instruction()
                 self._tick()
             except StopIteration:
                 logging.error("HALT")
@@ -120,4 +116,4 @@ class ControlUnit:
                 logging.error("Input buffer is empty!")
                 break
 
-        return self._data_path.output_buffer, self.current_tick
+        return self._data_path.output_buffer, self._current_tick
