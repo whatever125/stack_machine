@@ -1,8 +1,9 @@
 import logging
 import sys
-from machine import DataPath, ControlUnit
 from isa import read_code
 from collections import deque
+import control_unit as cu
+import data_path as dp
 
 
 def main(code_file_name: str, input_file_name: str) -> None:
@@ -16,8 +17,8 @@ def main(code_file_name: str, input_file_name: str) -> None:
 
     logging.debug(code)
     logging.debug(input_tokens)
-    data_path: DataPath = DataPath(1024, code, input_tokens)
-    control_unit: ControlUnit = ControlUnit(data_path)
+    data_path: dp.DataPath = dp.DataPath(1024, code, input_tokens)
+    control_unit: cu.ControlUnit = cu.ControlUnit(data_path)
     data_path._control_unit = control_unit
 
     output, ticks = control_unit.run_simulation()
