@@ -22,7 +22,7 @@ class Opcode(StrEnum):
     PUSH = auto()
     POP = auto()
     SWAP = auto()
-    OVER = auto()
+    DUP = auto()
 
     # math
     INC = auto()

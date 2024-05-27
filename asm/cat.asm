@@ -5,12 +5,11 @@ loop:
     PUSH    port
     LOAD
     IN
-    JZ
-    PUSH    break
-    SWAP
+    DUP
     PUSH    port
     LOAD
     OUT
+    JZ
     PUSH    loop
     JMP
 break:

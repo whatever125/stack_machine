@@ -6,13 +6,13 @@ from collections import deque
 
 
 def main(code_file_name: str, input_file_name: str) -> None:
-    logging.basicConfig(level=logging.ERROR, stream=sys.stdout)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
     code: list = read_code(code_file_name)
     with open(input_file_name, encoding="utf-8") as file:
         input_text: str = file.read()
-        input_tokens: deque = deque(input_text)
-    input_tokens.append(0)
+        input_text += "\0"
+        input_tokens: deque = deque(map(ord, input_text))
 
     logging.debug(code)
     logging.debug(input_tokens)
@@ -20,10 +20,10 @@ def main(code_file_name: str, input_file_name: str) -> None:
     control_unit: ControlUnit = ControlUnit(data_path)
     data_path._control_unit = control_unit
 
-    output, instructions_counter, ticks = control_unit.run_simulation(1000)
+    output, ticks = control_unit.run_simulation()
 
-    print(f"Output: {''.join(output)}")
-    print(f"Instructions_counter: {instructions_counter}, ticks: {ticks}")
+    print(f"Output: {"".join(map(chr, output))}")
+    print(f"Ticks: {ticks}")
 
 
 if __name__ == "__main__":

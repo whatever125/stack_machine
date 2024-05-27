@@ -126,20 +126,20 @@ class ControlUnit:
             case Opcode.PUSH: return 4
             case Opcode.POP: return 6
             case Opcode.SWAP: return 8
-            case Opcode.OVER: return 12
-            case Opcode.INC: return 19
-            case Opcode.DEC: return 20
-            case Opcode.ADD: return 21
-            case Opcode.SUB: return 23
-            case Opcode.MUL: return 25
-            case Opcode.DIV: return 27
-            case Opcode.LOAD: return 29
-            case Opcode.SAVE: return 31
-            case Opcode.IN: return 36
-            case Opcode.OUT: return 37
-            case Opcode.JMP: return 41
-            case Opcode.JZ: return 44
-            case Opcode.HALT: return 48
+            case Opcode.DUP: return 12
+            case Opcode.INC: return 13
+            case Opcode.DEC: return 14
+            case Opcode.ADD: return 15
+            case Opcode.SUB: return 17
+            case Opcode.MUL: return 19
+            case Opcode.DIV: return 21
+            case Opcode.LOAD: return 23
+            case Opcode.SAVE: return 25
+            case Opcode.IN: return 30
+            case Opcode.OUT: return 31
+            case Opcode.JMP: return 35
+            case Opcode.JZ: return 38
+            case Opcode.HALT: return 42
             case _: return 0
 
     def dispatch_micro_instruction(self):
@@ -211,13 +211,12 @@ class ControlUnit:
                                           self._data_path.tos, " ".join(map(str, list(self._data_path.data_stack)[::-1]))])))
         logging.debug("")
 
-    def run_simulation(self, micro_instructions_limit: int) -> (str, int, int):
-        micro_instructions_counter: int = 0
-        while micro_instructions_counter < micro_instructions_limit:
+    def run_simulation(self) -> (str, int, int):
+        while True:
             try:
                 self.print_state()
                 self.dispatch_micro_instruction()
-                micro_instructions_counter += 1
+                self._tick()
             except StopIteration:
                 logging.error("HALT")
                 break
@@ -225,4 +224,4 @@ class ControlUnit:
                 logging.error("Input buffer is empty!")
                 break
 
-        return "".join(self._data_path.output_buffer), micro_instructions_counter, self.current_tick
+        return self._data_path.output_buffer, self.current_tick
