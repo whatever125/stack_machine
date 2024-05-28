@@ -1,4 +1,5 @@
 from collections import deque
+
 import control_unit as cu
 from uarch import Signal
 from isa import Opcode
@@ -6,7 +7,7 @@ from isa import Opcode
 
 class DataPath:
     def __init__(self, memory_size: int, program: list, input_buffer: deque) -> None:
-        self.control_unit: cu.ControlUnit | None = None
+        self.control_unit: cu.ControlUnit
         self._alu: ALU = ALU(self)
 
         self._memory_size: int = memory_size
@@ -111,7 +112,7 @@ class ALU:
         elif Signal.ALU_MUL in micro_instruction:
             result = left * right
         elif Signal.ALU_DIV in micro_instruction:
-            result = left / right
+            result = int(left / right)
         else:
             result = 0
 

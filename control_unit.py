@@ -1,4 +1,6 @@
 import logging
+from typing import Tuple
+
 from isa import Opcode
 from uarch import Signal, MICROPROGRAM
 import data_path as dp
@@ -110,7 +112,7 @@ class ControlUnit:
             " ".join(map(str, list(self._data_path.data_stack)[::-1]))])))
         logging.debug("")
 
-    def run_simulation(self) -> (str, int, int):
+    def run_simulation(self) -> Tuple[list, int]:
         while True:
             try:
                 self.print_state()

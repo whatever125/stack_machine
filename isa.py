@@ -3,10 +3,6 @@ import json
 
 
 class Term:
-    _line: int = None
-    _position: int = None
-    _symbol: str = None
-
     def __init__(self, line: int, position: int, symbol: str):
         self._line = line
         self._position = position

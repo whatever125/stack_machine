@@ -1,4 +1,6 @@
 import sys
+from typing import Tuple
+
 from isa import Opcode, Term, write_code
 
 
@@ -6,9 +8,9 @@ def get_meaningful_token(line: str) -> str:
     return line.split(";", 1)[0].strip()
 
 
-def translate_stage_1(text: str) -> (list, dict[str: int]):
+def translate_stage_1(text: str) -> Tuple[list, dict[str, int]]:
     code: list = []
-    labels: dict[str: int] = {}
+    labels: dict[str, int] = {}
 
     for line_num, line in enumerate(text.splitlines(), 1):
         token: str = get_meaningful_token(line)
@@ -42,12 +44,12 @@ def translate_stage_1(text: str) -> (list, dict[str: int]):
                 case _:
                     raise Exception(f"`{opcode.upper()}` does not take an argument")
         else:
-            opcode: Opcode = Opcode(token.lower())
+            opcode = Opcode(token.lower())
             code.append({"opcode": opcode, "term": Term(line_num, 0, token)})
     return code, labels
 
 
-def translate_stage_2(code: list, labels: dict[str: int]) -> list:
+def translate_stage_2(code: list, labels: dict[str, int]) -> list:
     for instruction in code:
         if instruction["opcode"] == Opcode.PUSH:
             label = instruction["arg"]

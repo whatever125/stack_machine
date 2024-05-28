@@ -1,6 +1,7 @@
 import logging
 import sys
 from collections import deque
+
 from isa import read_code
 import control_unit as cu
 import data_path as dp
