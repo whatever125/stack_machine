@@ -37,7 +37,7 @@ class ControlUnit:
             Opcode.OUT: 31,
             Opcode.JMP: 35,
             Opcode.JZ: 38,
-            Opcode.HALT: 42
+            Opcode.HALT: 42,
         }
         if opcode in addresses:
             return addresses[opcode]
@@ -103,13 +103,21 @@ class ControlUnit:
 
     def print_state(self):
         logging.debug("\t".join(["PC", "MPC", "AR", "BR", "TOS", "NOS"]))
-        logging.debug("\t".join(map(str, [
-            self.program_counter,
-            self._micro_program_counter,
-            self._data_path.address_register,
-            self._data_path.buffer_register,
-            self._data_path.tos,
-            " ".join(map(str, list(self._data_path.data_stack)[::-1]))])))
+        logging.debug(
+            "\t".join(
+                map(
+                    str,
+                    [
+                        self.program_counter,
+                        self._micro_program_counter,
+                        self._data_path.address_register,
+                        self._data_path.buffer_register,
+                        self._data_path.tos,
+                        " ".join(map(str, list(self._data_path.data_stack)[::-1])),
+                    ],
+                )
+            )
+        )
         logging.debug("")
 
     def run_simulation(self) -> Tuple[list, int]:

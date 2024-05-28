@@ -69,10 +69,14 @@ def read_code(filename: str) -> list:
         instruction["opcode"] = Opcode(instruction["opcode"])
         if "term" in instruction:
             if len(instruction["term"]) != 3:
-                raise Exception(f"incorrect json - incorrect term: {instruction["term"]}")
-            instruction["term"] = Term(int(instruction["term"]["line"]),
-                                       int(instruction["term"]["position"]),
-                                       instruction["term"]["symbol"])
+                raise Exception(
+                    f"incorrect json - incorrect term: {instruction["term"]}"
+                )
+            instruction["term"] = Term(
+                int(instruction["term"]["line"]),
+                int(instruction["term"]["position"]),
+                instruction["term"]["symbol"],
+            )
     return code
 
 

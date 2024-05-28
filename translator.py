@@ -32,15 +32,17 @@ def translate_stage_1(text: str) -> Tuple[list, dict[str, int]]:
             opcode: Opcode = Opcode(mnemonic.lower())
             match opcode:
                 case Opcode.PUSH:
-                    code.append({
-                        "opcode": opcode,
-                        "arg": arg,
-                        "term": Term(line_num, 0, token)})
+                    code.append(
+                        {"opcode": opcode, "arg": arg, "term": Term(line_num, 0, token)}
+                    )
                 case Opcode.WORD:
-                    code.append({
-                        "opcode": opcode,
-                        "arg": int(arg),
-                        "term": Term(line_num, 0, token)})
+                    code.append(
+                        {
+                            "opcode": opcode,
+                            "arg": int(arg),
+                            "term": Term(line_num, 0, token),
+                        }
+                    )
                 case _:
                     raise Exception(f"`{opcode.upper()}` does not take an argument")
         else:
@@ -66,7 +68,7 @@ def translate(text: str) -> list:
 
 
 def main(source_name: str, target_name: str) -> None:
-    with open(source_name, encoding='utf-8') as file:
+    with open(source_name, encoding="utf-8") as file:
         text: str = file.read()
 
     code: list = translate(text)
