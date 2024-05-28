@@ -6,12 +6,12 @@ from isa import Opcode
 
 class DataPath:
     def __init__(self, memory_size: int, program: list, input_buffer: deque) -> None:
-        self._control_unit: cu.ControlUnit | None = None
+        self.control_unit: cu.ControlUnit | None = None
         self._alu: ALU = ALU(self)
 
         self._memory_size: int = memory_size
         self._memory: list = [{"opcode": Opcode.NOP}] * memory_size
-        for index, instruction in enumerate(program):
+        for index, _ in enumerate(program):
             self._memory[index] = program[index]
 
         self._address_register: int = 0
@@ -39,7 +39,7 @@ class DataPath:
         if Signal.SEL_AR_TOS in micro_instruction:
             self._address_register = self._tos
         elif Signal.SEL_AR_PC in micro_instruction:
-            self._address_register = self._control_unit.program_counter
+            self._address_register = self.control_unit.program_counter
 
     def latch_buffer_register(self) -> None:
         self._buffer_register = self.nos

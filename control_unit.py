@@ -16,27 +16,30 @@ class ControlUnit:
         self._current_tick += 1
 
     def _opcode_to_mpc(self, opcode: Opcode) -> int:
-        match opcode:
-            case Opcode.NOP: return 2
-            case Opcode.WORD: return 3
-            case Opcode.PUSH: return 4
-            case Opcode.POP: return 6
-            case Opcode.SWAP: return 8
-            case Opcode.DUP: return 12
-            case Opcode.INC: return 13
-            case Opcode.DEC: return 14
-            case Opcode.ADD: return 15
-            case Opcode.SUB: return 17
-            case Opcode.MUL: return 19
-            case Opcode.DIV: return 21
-            case Opcode.LOAD: return 23
-            case Opcode.SAVE: return 25
-            case Opcode.IN: return 30
-            case Opcode.OUT: return 31
-            case Opcode.JMP: return 35
-            case Opcode.JZ: return 38
-            case Opcode.HALT: return 42
-            case _: return 0
+        addresses = {
+            Opcode.NOP: 2,
+            Opcode.WORD: 3,
+            Opcode.PUSH: 4,
+            Opcode.POP: 6,
+            Opcode.SWAP: 8,
+            Opcode.DUP: 12,
+            Opcode.INC: 13,
+            Opcode.DEC: 14,
+            Opcode.ADD: 15,
+            Opcode.SUB: 17,
+            Opcode.MUL: 19,
+            Opcode.DIV: 21,
+            Opcode.LOAD: 23,
+            Opcode.SAVE: 25,
+            Opcode.IN: 30,
+            Opcode.OUT: 31,
+            Opcode.JMP: 35,
+            Opcode.JZ: 38,
+            Opcode.HALT: 42
+        }
+        if opcode in addresses:
+            return addresses[opcode]
+        return 0
 
     def _dispatch_micro_instruction(self):
         micro_instruction = self._microprogram[self._micro_program_counter]
@@ -85,7 +88,7 @@ class ControlUnit:
             opcode = data["opcode"]
             if "arg" in data.keys():
                 arg = data["arg"]
-                logging.info(f"{opcode.upper()} {arg}")
+                logging.info("%s %s", opcode.upper(), arg)
             else:
                 logging.info(opcode.upper())
             self._micro_program_counter = self._opcode_to_mpc(opcode)
@@ -98,9 +101,13 @@ class ControlUnit:
 
     def print_state(self):
         logging.debug("\t".join(["PC", "MPC", "AR", "BR", "TOS", "NOS"]))
-        logging.debug("\t".join(map(str, [self.program_counter, self._micro_program_counter,
-                                          self._data_path.address_register, self._data_path.buffer_register,
-                                          self._data_path.tos, " ".join(map(str, list(self._data_path.data_stack)[::-1]))])))
+        logging.debug("\t".join(map(str, [
+            self.program_counter,
+            self._micro_program_counter,
+            self._data_path.address_register,
+            self._data_path.buffer_register,
+            self._data_path.tos,
+            " ".join(map(str, list(self._data_path.data_stack)[::-1]))])))
         logging.debug("")
 
     def run_simulation(self) -> (str, int, int):

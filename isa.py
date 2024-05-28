@@ -3,14 +3,26 @@ import json
 
 
 class Term:
-    line: int = None
-    position: int = None
-    symbol: str = None
+    _line: int = None
+    _position: int = None
+    _symbol: str = None
 
     def __init__(self, line: int, position: int, symbol: str):
-        self.line = line
-        self.position = position
-        self.symbol = symbol
+        self._line = line
+        self._position = position
+        self._symbol = symbol
+
+    @property
+    def line(self):
+        return self._line
+
+    @property
+    def position(self):
+        return self._position
+
+    @property
+    def symbol(self):
+        return self._symbol
 
 
 class Opcode(StrEnum):
