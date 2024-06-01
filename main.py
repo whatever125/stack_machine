@@ -13,8 +13,8 @@ def main(code_file_name: str, input_file_name: str) -> None:
     code: list = read_code(code_file_name)
     with open(input_file_name, encoding="utf-8") as file:
         input_text: str = file.read()
-        input_text += "\0"
-        input_tokens: deque = deque(map(ord, input_text))
+    input_tokens: deque = deque(map(ord, input_text))
+    input_tokens.appendleft(len(input_tokens))
 
     logging.debug(code)
     logging.debug(input_tokens)
@@ -24,8 +24,8 @@ def main(code_file_name: str, input_file_name: str) -> None:
 
     output, ticks = control_unit.run_simulation()
 
-    print(f"Output: {"".join(map(chr, output))}")
-    print(f"Ticks: {ticks}")
+    logging.info(f"Output: {output}")
+    logging.info(f"Ticks: {ticks}")
 
 
 if __name__ == "__main__":

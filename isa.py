@@ -53,7 +53,11 @@ def read_code(filename: str) -> list:
         while data:
             index += 1
             if index >= start:
-                if len(code) > 0 and isinstance(code[-1], Opcode) and code[-1] in [Opcode.PUSH]:
+                if (
+                    len(code) > 0
+                    and isinstance(code[-1], Opcode)
+                    and code[-1] in [Opcode.PUSH]
+                ):
                     value = struct.unpack("i", data)[0]
                     code.append(value)
                 else:
@@ -70,5 +74,7 @@ def read_code(filename: str) -> list:
 def write_code(target_name: str, code: list[int], commented_code: str):
     with open(target_name, "wb") as file:
         file.write(struct.pack(f"{len(code)}i", *code))
-    with open(target_name[:target_name.find(".")] + "_com.txt", "w", encoding="utf-8") as file:
+    with open(
+        target_name[: target_name.find(".")] + "_com.txt", "w", encoding="utf-8"
+    ) as file:
         file.write(commented_code)

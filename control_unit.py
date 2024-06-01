@@ -87,10 +87,6 @@ class ControlUnit:
         elif Signal.SEL_MPC_OPCODE in micro_instruction:
             data = self._data_path.read()
             opcode = Opcode(data)
-            # if "arg" in data.keys():
-            #     arg = data["arg"]
-            #     logging.info("%s %s", opcode.name.upper(), arg)
-            # else:
             logging.info(opcode.name.upper())
             self._micro_program_counter = self._opcode_to_mpc(opcode)
         elif Signal.SEL_MPC_NEXT in micro_instruction:

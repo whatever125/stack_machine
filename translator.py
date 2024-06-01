@@ -43,9 +43,9 @@ def is_opcode1(value: str) -> bool:
     return bool(re.fullmatch(r"^\w+ +\w+$", value))
 
 
-def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int | str], dict[str, int], int]:
+def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcode | str], dict[str, int], int]:
     data: dict[str, int | list[int]] = {}
-    code: list[int | str] = []
+    code: list[Opcode | str] = []
     labels: dict[str, int] = {}
     position = 1
     code_position = position
@@ -82,9 +82,10 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int |
                     labels[name] = position
                     position += 1
                 elif is_str(value):
-                    data[name] = [len(value) - 2] + [ord(c) for c in value[1:-1]]
+                    pstr = [len(value) - 2] + [ord(c) for c in value[1:-1]]
+                    data[name] = pstr
                     labels[name] = position
-                    position += len(data[name])
+                    position += len(pstr)
                 elif is_bf(value):
                     _, size = value.split(maxsplit=1)
                     if is_positive_int(size):
@@ -151,20 +152,21 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int |
     return data, code, labels, code_position
 
 
-def translate_stage_2(data: dict[str, int | list[int]], code: list[int | str], labels: dict[str, int]) -> list:
+def translate_stage_2(data: dict[str, int | list[int]], code: list[Opcode | str], labels: dict[str, int]) -> list[int]:
     plain_data: list[int] = [item for element in data.values()
                              for item in (element if isinstance(element, list) else [element])]
-    code: list[int | str] = [len(plain_data) + 1] + plain_data + code
+    plain_data.insert(0, len(plain_data) + 1)
+    plain_code: list[int] = []
 
-    for index, instruction in enumerate(code):
-        if isinstance(code[index], Opcode):
-            if instruction in [Opcode.PUSH]:
-                label = code[index + 1]
-                if label not in labels.keys():
-                    raise Exception(f"label not defined: {label}")
-                code[index + 1] = labels[label]
-            code[index] = instruction.value
-    return code
+    for element in code:
+        if isinstance(element, Opcode):
+            plain_code.append(element.value)
+        elif isinstance(element, str):
+            if element not in labels.keys():
+                raise Exception(f"label not defined: {element}")
+            plain_code.append(labels[element])
+
+    return plain_data + plain_code
 
 
 def value_to_binary32(value: int) -> str:
@@ -173,36 +175,36 @@ def value_to_binary32(value: int) -> str:
     return " ".join([formatted_value[i:j] for i, j in zip(indices, indices[1:]+[None])])
 
 
-def comment_code(data: dict[str, int | list[int]], code: list[int], labels: dict[str, int], code_position: int) -> str:
+def comment_code(data: dict[str, int | list[int]], code: list[Opcode | str], labels: dict[str, int], code_position: int) -> str:
     address = 0
     commented_code = [f"{address}\t{value_to_binary32(code_position)}\tstart_address = {code_position}"]
-    for name, value in data.items():
-        if isinstance(value, int):
+    for name, data_value in data.items():
+        if isinstance(data_value, int):
             address += 1
-            commented_code.append(f"{address}\t{value_to_binary32(value)}\t{name} = {value}")
-        elif isinstance(value, list):
+            commented_code.append(f"{address}\t{value_to_binary32(data_value)}\t{name} = {data_value}")
+        elif isinstance(data_value, list):
             address += 1
-            commented_code.append(f"{address}\t{value_to_binary32(value[0])}\t{name} : {value[0]}")
-            for i in value[1:]:
+            commented_code.append(f"{address}\t{value_to_binary32(data_value[0])}\t{name} : {data_value[0]}")
+            for i in data_value[1:]:
                 address += 1
-                if value[0] == 0:
+                if data_value[0] == 0:
                     commented_code.append(f"{address}\t{value_to_binary32(i)}\t{" " * len(name)}   {i}")
                 else:
                     commented_code.append(f"{address}\t{value_to_binary32(i)}\t{" " * len(name)}  `{chr(i)}`")
-    for value in code:
+    for code_value in code:
         address += 1
-        if isinstance(value, str):
-            commented_code.append(f"{address}\t{value_to_binary32(labels[value])}\t{value}")
-        elif isinstance(value, Opcode):
-            commented_code.append(f"{address}\t{value_to_binary32(value)}\t{value.name}")
+        if isinstance(code_value, str):
+            commented_code.append(f"{address}\t{value_to_binary32(labels[code_value])}\t{code_value}")
+        elif isinstance(code_value, Opcode):
+            commented_code.append(f"{address}\t{value_to_binary32(code_value)}\t{code_value.name}")
     return "\n".join(commented_code)
 
 
 def translate(text: str) -> Tuple[list[int], str]:
     data, code, labels, code_position = translate_stage_1(text)
     commented_code = comment_code(data, code, labels, code_position)
-    code = translate_stage_2(data, code, labels)
-    return code, commented_code
+    translated_code = translate_stage_2(data, code, labels)
+    return translated_code, commented_code
 
 
 def main(source_name: str, target_name: str) -> None:
