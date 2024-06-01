@@ -134,8 +134,16 @@ class IOUnit:
     def write(self, value: int) -> None:
         return self._output_buffer.append(value)
 
-    def get_output(self) -> deque[int]:
-        return self._output_buffer
+    def get_output(self) -> str:
+        output: list[chr] = []
+        i = 0
+        while i < len(self._output_buffer):
+            length = self._output_buffer[i]
+            for _ in range(length):
+                i += 1
+                output.append(chr(self._output_buffer[i]))
+            i += 1
+        return ''.join(output)
 
 
 class IOController:

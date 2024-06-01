@@ -8,7 +8,7 @@ import data_path as dp
 
 
 def main(code_file_name: str, input_file_name: str) -> None:
-    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+    logging.basicConfig(level=logging.WARN, stream=sys.stdout)
 
     code: list = read_code(code_file_name)
 
@@ -34,8 +34,8 @@ def main(code_file_name: str, input_file_name: str) -> None:
 
     io_controller.disconnect(port=1)
 
-    logging.info(f"Output: {io_unit.get_output()}")
-    logging.info(f"Ticks: {ticks}")
+    print(f"Output: {io_unit.get_output()}")
+    print(f"Ticks: {ticks}")
 
 
 if __name__ == "__main__":

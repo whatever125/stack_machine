@@ -100,110 +100,109 @@ MICROPROGRAM = [
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 13 - INC
+    # 13 - OVER
+    [Signal.LATCH_BR,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 14
+    [Signal.DS_POP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 15
+    [Signal.DS_PUSH,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 16
+    [Signal.LATCH_TOS, Signal.SEL_TOS_BR,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 17
+    [Signal.LATCH_BR,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 18
+    [Signal.DS_PUSH,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 19
+    [Signal.LATCH_TOS, Signal.SEL_TOS_BR,
+     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 20 - INC
     [Signal.ALU_SUM, Signal.ALU_RIGHT_OP_ZERO, Signal.ALU_INC,
      Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 14 - DEC
+    # 21 - DEC
     [Signal.ALU_SUM, Signal.ALU_RIGHT_OP_ZERO, Signal.ALU_DEC,
      Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 15 - ADD
+    # 22 - ADD
     [Signal.ALU_SUM, Signal.ALU_RIGHT_OP_NOS,
      Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 16
+    # 23
     [Signal.DS_POP,
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 17 - SUB
+    # 24 - SUB
     [Signal.ALU_SUB, Signal.ALU_RIGHT_OP_NOS,
      Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 18
+    # 25
     [Signal.DS_POP,
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 19 - MUL
+    # 26 - MUL
     [Signal.ALU_MUL, Signal.ALU_RIGHT_OP_NOS,
      Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 20
-    [Signal.DS_POP,
-     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
-     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-
-    # 21 - DIV
-    [Signal.ALU_DIV, Signal.ALU_RIGHT_OP_NOS,
-     Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 22
-    [Signal.DS_POP,
-     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
-     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-
-    # 23 - LOAD
-    [Signal.LATCH_AR, Signal.SEL_AR_TOS,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 24
-    [Signal.LATCH_TOS, Signal.SEL_TOS_MEMORY,
-     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
-     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-
-    # 25 - SAVE
-    [Signal.LATCH_AR, Signal.SEL_AR_TOS,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 26
-    [Signal.WRITE,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
     # 27
     [Signal.DS_POP,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 28
-    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 28 - DIV
+    [Signal.ALU_DIV, Signal.ALU_RIGHT_OP_NOS,
+     Signal.LATCH_TOS, Signal.SEL_TOS_ALU,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
     # 29
     [Signal.DS_POP,
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 30 - IN
+    # 30 - LOAD
+    [Signal.LATCH_AR, Signal.SEL_AR_TOS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 31
+    [Signal.LATCH_TOS, Signal.SEL_TOS_MEMORY,
+     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 32 - SAVE
+    [Signal.LATCH_AR, Signal.SEL_AR_TOS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 33
+    [Signal.WRITE,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 34
+    [Signal.DS_POP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 35
+    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 36
+    [Signal.DS_POP,
+     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 37 - IN
     [Signal.LATCH_TOS, Signal.SEL_TOS_INPUT,
      Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 31 - OUT
+    # 38 - OUT
     [Signal.OUT,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 32
-    [Signal.DS_POP,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 33
-    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 34
-    [Signal.DS_POP,
-     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
-     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-
-    # 35 - JMP
-    [Signal.LATCH_PC, Signal.SEL_PC_JMP,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 36
-    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 37
-    [Signal.DS_POP,
-     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-
-    # 38 - JZ
-    [Signal.LATCH_PC, Signal.SEL_PC_JZ,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
     # 39
     [Signal.DS_POP,
@@ -213,28 +212,52 @@ MICROPROGRAM = [
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
     # 41
     [Signal.DS_POP,
+     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 42 - CALL
-    [Signal.RS_PUSH,
-     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 43
+    # 42 - JMP
     [Signal.LATCH_PC, Signal.SEL_PC_JMP,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 44
+    # 43
     [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
-    # 45
+    # 44
     [Signal.DS_POP,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 46 - RET
-    [Signal.LATCH_PC, Signal.SEL_PC_RS,
+    # 45 - JZ
+    [Signal.LATCH_PC, Signal.SEL_PC_JZ,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 46
+    [Signal.DS_POP,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
     # 47
+    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 48
+    [Signal.DS_POP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 49 - CALL
+    [Signal.RS_PUSH,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 50
+    [Signal.LATCH_PC, Signal.SEL_PC_JMP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 51
+    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 52
+    [Signal.DS_POP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 53 - RET
+    [Signal.LATCH_PC, Signal.SEL_PC_RS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 54
     [Signal.RS_POP,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 48 - HALT
+    # 55 - HALT
     [Signal.HALT]
 ]

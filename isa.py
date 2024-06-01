@@ -11,6 +11,7 @@ class Opcode(IntEnum):
     POP = auto()
     SWAP = auto()
     DUP = auto()
+    OVER = auto()
 
     # math
     INC = auto()
