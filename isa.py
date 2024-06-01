@@ -67,6 +67,8 @@ def read_code(filename: str) -> list:
     return code
 
 
-def write_code(target_name: str, code: list[int]):
+def write_code(target_name: str, code: list[int], commented_code: str):
     with open(target_name, "wb") as file:
         file.write(struct.pack(f"{len(code)}i", *code))
+    with open(target_name[:target_name.find(".")] + "_com.txt", "w", encoding="utf-8") as file:
+        file.write(commented_code)

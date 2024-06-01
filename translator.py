@@ -24,7 +24,7 @@ def is_int(value: str) -> bool:
 
 
 def is_positive_int(value: str) -> bool:
-    return bool(re.fullmatch(r"^\d+$", value))
+    return bool(re.fullmatch(r"^0*[1-9]\d*$", value))
 
 
 def is_str(value: str) -> bool:
@@ -36,18 +36,19 @@ def is_bf(value: str) -> bool:
 
 
 def is_opcode0(value: str) -> bool:
-    return value.upper() in get_opcode_names()
+    return bool(re.fullmatch(r"^\w+$", value))
 
 
 def is_opcode1(value: str) -> bool:
-    pass
+    return bool(re.fullmatch(r"^\w+ +\w+$", value))
 
 
-def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int | str], dict[str, int]]:
+def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int | str], dict[str, int], int]:
     data: dict[str, int | list[int]] = {}
     code: list[int | str] = []
     labels: dict[str, int] = {}
     position = 1
+    code_position = position
     data_mode = False
     code_mode = False
 
@@ -66,6 +67,7 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int |
                 raise Exception(f"wrong section on line {line_num}")
             code_mode = True
             data_mode = False
+            code_position = position
             continue
 
         if is_variable(token):
@@ -109,16 +111,13 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int |
             else:
                 raise Exception(f"label outside of any section on line {line_num}")
 
-        elif " " in token:
+        elif is_opcode1(token):
             if data_mode:
                 raise Exception(f"instruction inside data section on line {line_num}")
             elif code_mode:
-                sub_tokens = list(map(lambda s: s.strip(), token.split()))
-                if len(sub_tokens) != 2:
-                    raise Exception(f"invalid instruction: `{token}` on line {line_num}")
                 mnemonic: str
                 arg: str
-                mnemonic, arg = sub_tokens
+                mnemonic, arg = list(map(lambda s: s.strip(), token.split()))
                 if mnemonic.upper() not in get_opcode_names():
                     raise Exception(f"invalid mnemonic: `{mnemonic}` on line {line_num}")
                 opcode: Opcode = Opcode[mnemonic.upper()]
@@ -132,19 +131,24 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[int |
             else:
                 raise Exception(f"instruction outside of any section on line {line_num}")
 
-        else:
+        elif is_opcode0(token):
             if data_mode:
                 raise Exception(f"instruction inside data section on line {line_num}")
             elif code_mode:
                 if token.upper() not in get_opcode_names():
                     raise Exception(f"invalid mnemonic: `{token}` on line {line_num}")
                 opcode = Opcode[token.upper()]
+                if opcode in [Opcode.PUSH]:
+                    raise Exception(f"`{token.upper()}` must take an argument")
                 code.append(opcode)
                 position += 1
             else:
                 raise Exception(f"instruction outside of any section on line {line_num}")
 
-    return data, code, labels
+        else:
+            raise Exception(f"invalid instruction format on line {line_num}")
+
+    return data, code, labels, code_position
 
 
 def translate_stage_2(data: dict[str, int | list[int]], code: list[int | str], labels: dict[str, int]) -> list:
@@ -163,19 +167,51 @@ def translate_stage_2(data: dict[str, int | list[int]], code: list[int | str], l
     return code
 
 
-def translate(text: str) -> list:
-    data, code, labels = translate_stage_1(text)
+def value_to_binary32(value: int) -> str:
+    formatted_value = format(value & 0xFFFFFFFF, "032b")
+    indices = [0, 4, 8, 12, 16, 20, 24, 28, 32]
+    return " ".join([formatted_value[i:j] for i, j in zip(indices, indices[1:]+[None])])
+
+
+def comment_code(data: dict[str, int | list[int]], code: list[int], labels: dict[str, int], code_position: int) -> str:
+    address = 0
+    commented_code = [f"{address}\t{value_to_binary32(code_position)}\tstart_address = {code_position}"]
+    for name, value in data.items():
+        if isinstance(value, int):
+            address += 1
+            commented_code.append(f"{address}\t{value_to_binary32(value)}\t{name} = {value}")
+        elif isinstance(value, list):
+            address += 1
+            commented_code.append(f"{address}\t{value_to_binary32(value[0])}\t{name} : {value[0]}")
+            for i in value[1:]:
+                address += 1
+                if value[0] == 0:
+                    commented_code.append(f"{address}\t{value_to_binary32(i)}\t{" " * len(name)}   {i}")
+                else:
+                    commented_code.append(f"{address}\t{value_to_binary32(i)}\t{" " * len(name)}  `{chr(i)}`")
+    for value in code:
+        address += 1
+        if isinstance(value, str):
+            commented_code.append(f"{address}\t{value_to_binary32(labels[value])}\t{value}")
+        elif isinstance(value, Opcode):
+            commented_code.append(f"{address}\t{value_to_binary32(value)}\t{value.name}")
+    return "\n".join(commented_code)
+
+
+def translate(text: str) -> Tuple[list[int], str]:
+    data, code, labels, code_position = translate_stage_1(text)
+    commented_code = comment_code(data, code, labels, code_position)
     code = translate_stage_2(data, code, labels)
-    return code
+    return code, commented_code
 
 
 def main(source_name: str, target_name: str) -> None:
     with open(source_name, encoding="utf-8") as file:
         text: str = file.read()
 
-    code: list = translate(text)
+    code, commented_code = translate(text)
 
-    write_code(target_name, code)
+    write_code(target_name, code, commented_code)
 
 
 if __name__ == "__main__":
