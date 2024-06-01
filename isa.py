@@ -20,6 +20,7 @@ class Opcode(IntEnum):
     SUB = auto()
     MUL = auto()
     DIV = auto()
+    MOD = auto()
 
     # memory
     LOAD = auto()

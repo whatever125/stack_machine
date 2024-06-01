@@ -112,6 +112,8 @@ class ALU:
             result = left * right
         elif Signal.ALU_DIV in micro_instruction:
             result = int(left / right)
+        elif Signal.ALU_MOD in micro_instruction:
+            result = int(left % right)
         else:
             result = 0
 
