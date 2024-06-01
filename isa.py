@@ -32,6 +32,10 @@ class Opcode(IntEnum):
     JMP = auto()
     JZ = auto()
 
+    # functions
+    CALL = auto()
+    RET = auto()
+
     # stop
     HALT = auto()
 

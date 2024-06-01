@@ -1,4 +1,5 @@
 import logging
+from collections import deque
 
 from isa import Opcode
 from uarch import Signal, MICROPROGRAM
@@ -12,6 +13,7 @@ class ControlUnit:
         self._micro_program_counter: int = 0
         self._current_tick: int = 0
         self._microprogram: list = MICROPROGRAM
+        self._return_stack: deque[int] = deque()
 
     def _tick(self) -> None:
         self._current_tick += 1
@@ -35,7 +37,9 @@ class ControlUnit:
             Opcode.OUT: 31,
             Opcode.JMP: 35,
             Opcode.JZ: 38,
-            Opcode.HALT: 42,
+            Opcode.CALL: 42,
+            Opcode.RET: 46,
+            Opcode.HALT: 48,
         }
         if opcode in addresses:
             return addresses[opcode]
@@ -47,9 +51,13 @@ class ControlUnit:
         for signal in micro_instruction:
             match signal:
                 case Signal.DS_PUSH:
-                    self._data_path.push()
+                    self._data_path.ds_push()
                 case Signal.DS_POP:
-                    self._data_path.pop()
+                    self._data_path.ds_pop()
+                case Signal.RS_PUSH:
+                    self._rs_push()
+                case Signal.RS_POP:
+                    self._rs_pop()
                 case Signal.LATCH_TOS:
                     self._data_path.latch_address_tos(micro_instruction)
                 case Signal.LATCH_AR:
@@ -69,6 +77,12 @@ class ControlUnit:
                 case _:
                     pass
 
+    def _rs_push(self) -> None:
+        self._return_stack.append(self._program_counter + 1)
+
+    def _rs_pop(self) -> None:
+        self._return_stack.pop()
+
     def _latch_program_counter(self, micro_instruction: list[Signal]) -> None:
         if Signal.SEL_PC_NEXT in micro_instruction:
             self._program_counter += 1
@@ -79,6 +93,10 @@ class ControlUnit:
                 self._program_counter = self._data_path.nos
             else:
                 self._program_counter += 1
+        elif Signal.SEL_PC_RS in micro_instruction:
+            if len(self._return_stack) == 0:
+                raise Exception("Empty return stack")
+            self._program_counter = self._return_stack[-1]
 
     def _latch_micro_program_counter(self, micro_instruction: list[Signal]) -> None:
         if Signal.SEL_MPC_ZERO in micro_instruction:

@@ -5,6 +5,9 @@ class Signal(StrEnum):
     DS_PUSH = auto()
     DS_POP = auto()
 
+    RS_PUSH = auto()
+    RS_POP = auto()
+
     LATCH_TOS = auto()
     SEL_TOS_DS = auto()
     SEL_TOS_MEMORY = auto()
@@ -22,6 +25,7 @@ class Signal(StrEnum):
     SEL_PC_NEXT = auto()
     SEL_PC_JMP = auto()
     SEL_PC_JZ = auto()
+    SEL_PC_RS = auto()
 
     LATCH_MPC = auto()
     SEL_MPC_ZERO = auto()
@@ -211,6 +215,26 @@ MICROPROGRAM = [
     [Signal.DS_POP,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 42 - HALT
+    # 42 - CALL
+    [Signal.RS_PUSH,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 43
+    [Signal.LATCH_PC, Signal.SEL_PC_JMP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 44
+    [Signal.LATCH_TOS, Signal.SEL_TOS_DS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 45
+    [Signal.DS_POP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 46 - RET
+    [Signal.LATCH_PC, Signal.SEL_PC_RS,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 47
+    [Signal.RS_POP,
+     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
+
+    # 48 - HALT
     [Signal.HALT]
 ]

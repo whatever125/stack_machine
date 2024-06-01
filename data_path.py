@@ -44,10 +44,10 @@ class DataPath:
     def latch_buffer_register(self) -> None:
         self._buffer_register = self.nos
 
-    def push(self) -> None:
+    def ds_push(self) -> None:
         self._data_stack.append(self._tos)
 
-    def pop(self) -> None:
+    def ds_pop(self) -> None:
         self._data_stack.pop()
 
     def out(self) -> None:
@@ -75,7 +75,7 @@ class DataPath:
     @property
     def nos(self) -> int:
         if len(self._data_stack) == 0:
-            return 0
+            raise Exception("Empty data stack")
         return self._data_stack[-1]
 
     @property
