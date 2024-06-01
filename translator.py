@@ -10,12 +10,16 @@ def get_meaningful_token(line: str) -> str:
 
 
 def is_label(value: str) -> bool:
-    return bool(re.fullmatch(r"^[a-zA-Z_][a-zA-Z_0-9]*\s*:$", value))
+    return bool(re.fullmatch(r"^[a-zA-Z_][a-zA-Z_0-9]*:$", value))
+
+
+def is_label_name(value: str) -> bool:
+    return bool(re.fullmatch(r"^[a-zA-Z_][a-zA-Z_0-9]*$", value))
 
 
 def is_variable(value: str) -> bool:
     return bool(re.fullmatch(
-        r"^[a-zA-Z_][a-zA-Z_0-9]*\s*:\s*((-?\d+)|(\"[^\"]*\")|(\'[^\']*\')|(bf\s+\d+))$",
+        r"^[a-zA-Z_][a-zA-Z_0-9]*:\s*((-?\d+)|(\"[^\"]*\")|(\'[^\']*\')|(bf\s+\d+))$",
         value))
 
 
@@ -40,12 +44,12 @@ def is_opcode0(value: str) -> bool:
 
 
 def is_opcode1(value: str) -> bool:
-    return bool(re.fullmatch(r"^\w+ +\w+$", value))
+    return bool(re.fullmatch(r"^\w+ +((\w+)|(-?\d+))$", value))
 
 
-def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcode | str], dict[str, int], int]:
+def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcode | str | int], dict[str, int], int]:
     data: dict[str, int | list[int]] = {}
-    code: list[Opcode | str] = []
+    code: list[Opcode | str | int] = []
     labels: dict[str, int] = {}
     position = 1
     code_position = position
@@ -124,9 +128,16 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcod
                 opcode: Opcode = Opcode[mnemonic.upper()]
                 match opcode:
                     case Opcode.PUSH:
-                        code.append(opcode)
-                        code.append(arg)
-                        position += 2
+                        if is_label_name(arg):
+                            code.append(opcode)
+                            code.append(arg)
+                            position += 2
+                        elif is_int(arg):
+                            code.append(opcode)
+                            code.append(int(arg))
+                            position += 2
+                        else:
+                            raise Exception(f"invalid argument for `PUSH` on line {line_num}")
                     case _:
                         raise Exception(f"`{opcode.name.upper()}` does not take an argument")
             else:
@@ -152,7 +163,7 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcod
     return data, code, labels, code_position
 
 
-def translate_stage_2(data: dict[str, int | list[int]], code: list[Opcode | str], labels: dict[str, int]) -> list[int]:
+def translate_stage_2(data: dict[str, int | list[int]], code: list[Opcode | str | int], labels: dict[str, int]) -> list[int]:
     plain_data: list[int] = [item for element in data.values()
                              for item in (element if isinstance(element, list) else [element])]
     plain_data.insert(0, len(plain_data) + 1)
@@ -165,6 +176,8 @@ def translate_stage_2(data: dict[str, int | list[int]], code: list[Opcode | str]
             if element not in labels.keys():
                 raise Exception(f"label not defined: {element}")
             plain_code.append(labels[element])
+        elif isinstance(element, int):
+            plain_code.append(element)
 
     return plain_data + plain_code
 
@@ -175,7 +188,7 @@ def value_to_binary32(value: int) -> str:
     return " ".join([formatted_value[i:j] for i, j in zip(indices, indices[1:]+[None])])
 
 
-def comment_code(data: dict[str, int | list[int]], code: list[Opcode | str], labels: dict[str, int], code_position: int) -> str:
+def comment_code(data: dict[str, int | list[int]], code: list[Opcode | str | int], labels: dict[str, int], code_position: int) -> str:
     address = 0
     commented_code = [f"{address}\t{value_to_binary32(code_position)}\tstart_address = {code_position}"]
     for name, data_value in data.items():
@@ -194,16 +207,18 @@ def comment_code(data: dict[str, int | list[int]], code: list[Opcode | str], lab
     for code_value in code:
         address += 1
         if isinstance(code_value, str):
-            commented_code.append(f"{address}\t{value_to_binary32(labels[code_value])}\t{code_value}")
+            commented_code.append(f"{address}\t{value_to_binary32(labels[code_value])}\t{code_value} ({labels[code_value]})")
         elif isinstance(code_value, Opcode):
             commented_code.append(f"{address}\t{value_to_binary32(code_value)}\t{code_value.name}")
+        elif isinstance(code_value, int):
+            commented_code.append(f"{address}\t{value_to_binary32(code_value)}\t{code_value}")
     return "\n".join(commented_code)
 
 
 def translate(text: str) -> Tuple[list[int], str]:
     data, code, labels, code_position = translate_stage_1(text)
-    commented_code = comment_code(data, code, labels, code_position)
     translated_code = translate_stage_2(data, code, labels)
+    commented_code = comment_code(data, code, labels, code_position)
     return translated_code, commented_code
 
 
