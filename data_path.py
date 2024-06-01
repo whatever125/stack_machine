@@ -6,7 +6,7 @@ from isa import Opcode
 
 
 class DataPath:
-    def __init__(self, memory_size: int, program: list, input_buffer: deque) -> None:
+    def __init__(self, memory_size: int, program: list, io_controller: 'IOController') -> None:
         self.control_unit: cu.ControlUnit
         self._alu: ALU = ALU(self)
 
@@ -18,8 +18,7 @@ class DataPath:
         self._address_register: int = 0
         self._buffer_register: int = 0
 
-        self._input_buffer: deque = input_buffer
-        self._output_buffer: list = []
+        self._io_controller: IOController = io_controller
 
         self._data_stack: deque[int] = deque()
         self._tos: int = 0
@@ -30,7 +29,7 @@ class DataPath:
         elif Signal.SEL_TOS_MEMORY in micro_instruction:
             self._tos = self.read()
         elif Signal.SEL_TOS_INPUT in micro_instruction:
-            self._tos = self._input_buffer.popleft()
+            self._tos = self._io_controller.read(self._tos)
         elif Signal.SEL_TOS_ALU in micro_instruction:
             self._tos = self._alu.result(micro_instruction)
         elif Signal.SEL_TOS_BR in micro_instruction:
@@ -53,7 +52,7 @@ class DataPath:
 
     def out(self) -> None:
         symbol = self.nos
-        self._output_buffer.append(symbol)
+        self._io_controller.write(self._tos, symbol)
 
     def read(self):
         return self._memory[self._address_register]
@@ -64,10 +63,6 @@ class DataPath:
     @property
     def zero(self) -> bool:
         return self._tos == 0
-
-    @property
-    def output_buffer(self) -> list:
-        return self._output_buffer
 
     @property
     def data_stack(self):
@@ -126,3 +121,39 @@ class ALU:
             result -= 1
 
         return result
+
+
+class IOUnit:
+    def __init__(self, input_buffer: deque[int]):
+        self._input_buffer: deque[int] = input_buffer
+        self._output_buffer: deque[int] = deque()
+
+    def read(self) -> int:
+        return self._input_buffer.popleft()
+
+    def write(self, value: int) -> None:
+        return self._output_buffer.append(value)
+
+    def get_output(self) -> deque[int]:
+        return self._output_buffer
+
+
+class IOController:
+    def __init__(self) -> None:
+        self._connected_units: dict[int, IOUnit] = {}
+
+    def connect(self, port: int, unit: IOUnit) -> None:
+        self._connected_units[port] = unit
+
+    def disconnect(self, port: int) -> None:
+        self._connected_units.pop(port)
+
+    def read(self, port: int) -> int:
+        if not self._connected_units[port]:
+            raise Exception(f"No device connected to port {port}")
+        return self._connected_units[port].read()
+
+    def write(self, port: int, value: int):
+        if not self._connected_units[port]:
+            raise Exception(f"No device connected to port {port}")
+        self._connected_units[port].write(value)

@@ -1,5 +1,4 @@
 import logging
-from typing import Tuple
 
 from isa import Opcode
 from uarch import Signal, MICROPROGRAM
@@ -115,7 +114,7 @@ class ControlUnit:
         )
         logging.debug("")
 
-    def run_simulation(self) -> Tuple[list, int]:
+    def run_simulation(self) -> int:
         while True:
             try:
                 self.print_state()
@@ -128,4 +127,4 @@ class ControlUnit:
                 logging.error("Input buffer is empty!")
                 break
 
-        return self._data_path.output_buffer, self._current_tick
+        return self._current_tick
