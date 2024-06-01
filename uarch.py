@@ -57,12 +57,12 @@ MICROPROGRAM = [
     [Signal.LATCH_PC, Signal.SEL_PC_NEXT,
      Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
 
-    # 3 - WORD
-    [Signal.LATCH_PC, Signal.SEL_PC_NEXT,
-     Signal.LATCH_MPC, Signal.SEL_MPC_ZERO],
-
-    # 4 - PUSH
+    # 3 - PUSH
     [Signal.DS_PUSH,
+     Signal.LATCH_PC, Signal.SEL_PC_NEXT,
+     Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
+    # 4
+    [Signal.LATCH_AR, Signal.SEL_AR_PC,
      Signal.LATCH_MPC, Signal.SEL_MPC_NEXT],
     # 5
     [Signal.LATCH_TOS, Signal.SEL_TOS_MEMORY,

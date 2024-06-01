@@ -9,7 +9,7 @@ import data_path as dp
 class ControlUnit:
     def __init__(self, data_path: dp.DataPath) -> None:
         self._data_path: dp.DataPath = data_path
-        self._program_counter: int = 0
+        self._program_counter: int = self._data_path.start_address
         self._micro_program_counter: int = 0
         self._current_tick: int = 0
         self._microprogram: list = MICROPROGRAM
@@ -20,8 +20,7 @@ class ControlUnit:
     def _opcode_to_mpc(self, opcode: Opcode) -> int:
         addresses = {
             Opcode.NOP: 2,
-            Opcode.WORD: 3,
-            Opcode.PUSH: 4,
+            Opcode.PUSH: 3,
             Opcode.POP: 6,
             Opcode.SWAP: 8,
             Opcode.DUP: 12,
@@ -87,12 +86,12 @@ class ControlUnit:
             self._micro_program_counter = 0
         elif Signal.SEL_MPC_OPCODE in micro_instruction:
             data = self._data_path.read()
-            opcode = data["opcode"]
-            if "arg" in data.keys():
-                arg = data["arg"]
-                logging.info("%s %s", opcode.upper(), arg)
-            else:
-                logging.info(opcode.upper())
+            opcode = Opcode(data)
+            # if "arg" in data.keys():
+            #     arg = data["arg"]
+            #     logging.info("%s %s", opcode.name.upper(), arg)
+            # else:
+            logging.info(opcode.name.upper())
             self._micro_program_counter = self._opcode_to_mpc(opcode)
         elif Signal.SEL_MPC_NEXT in micro_instruction:
             self._micro_program_counter += 1

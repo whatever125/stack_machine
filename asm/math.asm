@@ -1,27 +1,17 @@
-a:
-    WORD    3
-b:
-    WORD    -1
-c:
-    WORD    2
-offset:
-    WORD    48
-port:
-    WORD    1
-start:
-    PUSH    offset
-    LOAD
-    PUSH    c
-    LOAD
-    PUSH    b
-    LOAD
-    PUSH    a
-    LOAD
-    ADD
-    MUL
-    ADD
-    PUSH    port
-    LOAD
-    OUT
-break:
-    HALT
+section data:
+    a:      3
+    b:      -5
+    c:      2
+
+section code:       ; (a + b) * c
+    start:
+        PUSH    c
+        LOAD
+        PUSH    b
+        LOAD
+        PUSH    a
+        LOAD
+        ADD
+        MUL
+    break:
+        HALT

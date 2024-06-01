@@ -11,7 +11,7 @@ class DataPath:
         self._alu: ALU = ALU(self)
 
         self._memory_size: int = memory_size
-        self._memory: list = [{"opcode": Opcode.NOP}] * memory_size
+        self._memory: list = [Opcode.NOP] * memory_size
         for index, _ in enumerate(program):
             self._memory[index] = program[index]
 
@@ -28,7 +28,7 @@ class DataPath:
         if Signal.SEL_TOS_DS in micro_instruction:
             self._tos = self.nos
         elif Signal.SEL_TOS_MEMORY in micro_instruction:
-            self._tos = self.read()["arg"]
+            self._tos = self.read()
         elif Signal.SEL_TOS_INPUT in micro_instruction:
             self._tos = self._input_buffer.popleft()
         elif Signal.SEL_TOS_ALU in micro_instruction:
@@ -55,11 +55,11 @@ class DataPath:
         symbol = self.nos
         self._output_buffer.append(symbol)
 
-    def read(self) -> dict:
+    def read(self):
         return self._memory[self._address_register]
 
     def write(self) -> None:
-        self._memory[self._address_register] = {"opcode": "word", "arg": self.nos}
+        self._memory[self._address_register] = self.nos
 
     @property
     def zero(self) -> bool:
@@ -90,6 +90,10 @@ class DataPath:
     @property
     def buffer_register(self):
         return self._buffer_register
+
+    @property
+    def start_address(self):
+        return self._memory[0]
 
 
 class ALU:

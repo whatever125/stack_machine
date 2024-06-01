@@ -1,30 +1,10 @@
-from enum import StrEnum, auto
-import json
+import struct
+from enum import IntEnum, auto
 
 
-class Term:
-    def __init__(self, line: int, position: int, symbol: str):
-        self._line = line
-        self._position = position
-        self._symbol = symbol
-
-    @property
-    def line(self):
-        return self._line
-
-    @property
-    def position(self):
-        return self._position
-
-    @property
-    def symbol(self):
-        return self._symbol
-
-
-class Opcode(StrEnum):
+class Opcode(IntEnum):
     # no op
     NOP = auto()
-    WORD = auto()
 
     # stack ops
     PUSH = auto()
@@ -59,31 +39,34 @@ class Opcode(StrEnum):
         return str(self.value)
 
 
-def read_code(filename: str) -> list:
-    with open(filename, encoding="utf-8") as file:
-        code: list = json.loads(file.read())
+def get_opcode_names():
+    return [e.name for e in Opcode]
 
-    for instruction in code:
-        if "opcode" not in instruction:
-            raise Exception(f"incorrect json - no opcode in instruction: {instruction}")
-        instruction["opcode"] = Opcode(instruction["opcode"])
-        if "term" in instruction:
-            if len(instruction["term"]) != 3:
-                raise Exception(
-                    f"incorrect json - incorrect term: {instruction["term"]}"
-                )
-            instruction["term"] = Term(
-                int(instruction["term"]["line"]),
-                int(instruction["term"]["position"]),
-                instruction["term"]["symbol"],
-            )
+
+def read_code(filename: str) -> list:
+    with open(filename, "rb") as file:
+        data = file.read(4)
+        index = 0
+        start = struct.unpack("i", data)[0]
+        code = [start]
+        data = file.read(4)
+        while data:
+            index += 1
+            if index >= start:
+                if len(code) > 0 and isinstance(code[-1], Opcode) and code[-1] in [Opcode.PUSH]:
+                    value = struct.unpack("i", data)[0]
+                    code.append(value)
+                else:
+                    value = struct.unpack("i", data)[0]
+                    opcode = Opcode(value)
+                    code.append(opcode)
+            else:
+                value = struct.unpack("i", data)[0]
+                code.append(value)
+            data = file.read(4)
     return code
 
 
-def write_code(target_name: str, code: list) -> None:
-    with open(target_name, "w", encoding="utf-8") as file:
-        buffer = []
-        for instruction in code:
-            buffer.append(json.dumps(instruction, default=vars))
-        file.write("[" + ",\n ".join(buffer) + "]")
-        # file.write(json.dumps(code, indent=2, default=vars))
+def write_code(target_name: str, code: list[int]):
+    with open(target_name, "wb") as file:
+        file.write(struct.pack(f"{len(code)}i", *code))
