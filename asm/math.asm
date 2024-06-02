@@ -5,13 +5,13 @@ section data:
 
 section code:       ; (a + b) * c
     start:
-        PUSH    c
-        LOAD
-        PUSH    b
-        LOAD
-        PUSH    a
-        LOAD
-        ADD
-        MUL
+        push    c
+        load
+        push    b
+        load
+        push    a
+        load
+        add
+        mul
     break:
-        HALT
+        halt

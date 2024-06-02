@@ -1,6 +1,7 @@
 section data:
     port:   1
     result: 0
+
 section code:
 start:
     push    1000    ; [i]

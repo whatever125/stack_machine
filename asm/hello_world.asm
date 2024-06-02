@@ -1,8 +1,8 @@
-; print "hello world!"
+; print "Hello, world!"
 
 section data:
     port:   1
-    hello:  "hello world!"
+    hello:  "Hello, world!"
 
 section code:
     ; out << len, halt if len == 0
