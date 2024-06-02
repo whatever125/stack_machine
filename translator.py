@@ -1,8 +1,12 @@
+import argparse
+import logging
 import re
-import sys
 from typing import Tuple
 
-from isa import Opcode, write_code, get_opcode_names
+from isa import Opcode, write_code, get_opcode_names, write_commented_code, MEMORY_SIZE, MIN_SIGN, MAX_SIGN
+
+DATA_SECTION = "section data:"
+CODE_SECTION = "section code:"
 
 
 def get_meaningful_token(line: str) -> str:
@@ -61,14 +65,14 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcod
         if token == "":
             continue
 
-        if token == "section data:":
+        if token == DATA_SECTION:
             if data_mode or code_mode:
-                raise Exception(f"wrong section on line {line_num}")
+                raise Exception(f"Wrong section on line {line_num}")
             data_mode = True
             continue
-        if token == "section code:":
+        if token == CODE_SECTION:
             if code_mode:
-                raise Exception(f"wrong section on line {line_num}")
+                raise Exception(f"Wrong section on line {line_num}")
             code_mode = True
             data_mode = False
             code_position = position
@@ -80,11 +84,14 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcod
                 value: str
                 name, value = map(lambda s: s.strip(), token.split(":", maxsplit=1))
                 if name in labels:
-                    raise Exception(f"redefinition of label `{name}` on line {line_num}")
+                    raise Exception(f"Redefinition of label `{name}` on line {line_num}")
                 if is_int(value):
-                    data[name] = int(value)
-                    labels[name] = position
-                    position += 1
+                    if MIN_SIGN <= int(value) <= MAX_SIGN:
+                        data[name] = int(value)
+                        labels[name] = position
+                        position += 1
+                    else:
+                        raise Exception(f"Value {value} out of boundaries on line {line_num}")
                 elif is_str(value):
                     pstr = [len(value) - 2] + [ord(c) for c in value[1:-1]]
                     data[name] = pstr
@@ -97,34 +104,34 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcod
                         labels[name] = position
                         position += int(size)
                     else:
-                        raise Exception(f"buffer size is not positive integer on line {line_num}")
+                        raise Exception(f"Buffer size is not positive integer on line {line_num}")
                 else:
-                    raise Exception(f"invalid variable: `{token}` on line {line_num}")
+                    raise Exception(f"Invalid variable: `{token}` on line {line_num}")
             elif code_mode:
-                raise Exception(f"variable inside code section on line {line_num}")
+                raise Exception(f"Variable inside code section on line {line_num}")
             else:
-                raise Exception(f"variable outside of any section on line {line_num}")
+                raise Exception(f"Variable outside of any section on line {line_num}")
 
         elif is_label(token):
             if data_mode:
-                raise Exception(f"label inside data section on line {line_num}")
+                raise Exception(f"Label inside data section on line {line_num}")
             elif code_mode:
                 label: str = token[:-1]
                 if label in labels:
-                    raise Exception(f"redefinition of label `{label}` on line {line_num}")
+                    raise Exception(f"Redefinition of label `{label}` on line {line_num}")
                 labels[label] = position
             else:
-                raise Exception(f"label outside of any section on line {line_num}")
+                raise Exception(f"Label outside of any section on line {line_num}")
 
         elif is_opcode1(token):
             if data_mode:
-                raise Exception(f"instruction inside data section on line {line_num}")
+                raise Exception(f"Instruction inside data section on line {line_num}")
             elif code_mode:
                 mnemonic: str
                 arg: str
                 mnemonic, arg = list(map(lambda s: s.strip(), token.split()))
                 if mnemonic.upper() not in get_opcode_names():
-                    raise Exception(f"invalid mnemonic: `{mnemonic}` on line {line_num}")
+                    raise Exception(f"Invalid mnemonic: `{mnemonic}` on line {line_num}")
                 opcode: Opcode = Opcode[mnemonic.upper()]
                 match opcode:
                     case Opcode.PUSH:
@@ -133,32 +140,38 @@ def translate_stage_1(text: str) -> Tuple[dict[str, int | list[int]], list[Opcod
                             code.append(arg)
                             position += 2
                         elif is_int(arg):
-                            code.append(opcode)
-                            code.append(int(arg))
-                            position += 2
+                            if MIN_SIGN <= int(arg) <= MAX_SIGN:
+                                code.append(opcode)
+                                code.append(int(arg))
+                                position += 2
+                            else:
+                                raise Exception(f"Argument {arg} out of boundaries on line {line_num}")
                         else:
-                            raise Exception(f"invalid argument for `PUSH` on line {line_num}")
+                            raise Exception(f"Invalid argument for `PUSH` on line {line_num}")
                     case _:
                         raise Exception(f"`{opcode.name.upper()}` does not take an argument")
             else:
-                raise Exception(f"instruction outside of any section on line {line_num}")
+                raise Exception(f"Instruction outside of any section on line {line_num}")
 
         elif is_opcode0(token):
             if data_mode:
-                raise Exception(f"instruction inside data section on line {line_num}")
+                raise Exception(f"Instruction inside data section on line {line_num}")
             elif code_mode:
                 if token.upper() not in get_opcode_names():
-                    raise Exception(f"invalid mnemonic: `{token}` on line {line_num}")
+                    raise Exception(f"Invalid mnemonic: `{token}` on line {line_num}")
                 opcode = Opcode[token.upper()]
                 if opcode in [Opcode.PUSH]:
                     raise Exception(f"`{token.upper()}` must take an argument")
                 code.append(opcode)
                 position += 1
             else:
-                raise Exception(f"instruction outside of any section on line {line_num}")
+                raise Exception(f"Instruction outside of any section on line {line_num}")
 
         else:
-            raise Exception(f"invalid instruction format on line {line_num}")
+            raise Exception(f"Invalid instruction format on line {line_num}")
+
+        if position >= MEMORY_SIZE:
+            raise Exception(f"Program is too long, must be <= {MEMORY_SIZE} instructions")
 
     return data, code, labels, code_position
 
@@ -174,7 +187,7 @@ def translate_stage_2(data: dict[str, int | list[int]], code: list[Opcode | str 
             plain_code.append(element.value)
         elif isinstance(element, str):
             if element not in labels.keys():
-                raise Exception(f"label not defined: {element}")
+                raise Exception(f"Label not defined: {element}")
             plain_code.append(labels[element])
         elif isinstance(element, int):
             plain_code.append(element)
@@ -184,7 +197,7 @@ def translate_stage_2(data: dict[str, int | list[int]], code: list[Opcode | str 
 
 def value_to_binary32(value: int) -> str:
     formatted_value = format(value & 0xFFFFFFFF, "032b")
-    indices = [0, 4, 8, 12, 16, 20, 24, 28, 32]
+    indices = [i for i in range(0, 32 + 1, 4)]
     return " ".join([formatted_value[i:j] for i, j in zip(indices, indices[1:]+[None])])
 
 
@@ -224,16 +237,26 @@ def translate(text: str) -> Tuple[list[int], str]:
 
 def main(source_name: str, target_name: str) -> None:
     with open(source_name, encoding="utf-8") as file:
-        text: str = file.read()
+        text: str = file.read().lower()
 
     code, commented_code = translate(text)
 
-    write_code(target_name, code, commented_code)
+    write_code(target_name, code)
+    write_commented_code(target_name, commented_code)
+
+    print("Translation successful")
+    print(f"Source LoC: {len(text.splitlines())}, Number of Instructions: {len(code)}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        raise Exception("wrong arguments: translator.py <input_file> <target_file>")
-    _, source, target = sys.argv
-    main(source, target)
-    print("translation successful")
+    parser = argparse.ArgumentParser(description="ASM code translator")
+    parser.add_argument("source_file", help="Source file name")
+    parser.add_argument("target_file", help="Target file name")
+
+    args = parser.parse_args()
+
+    try:
+        main(args.source_file, args.target_file)
+    except Exception as e:
+        logging.error(e)
+        raise e
