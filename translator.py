@@ -32,7 +32,7 @@ def is_label_name(value: str) -> bool:
 def is_variable(value: str) -> bool:
     return bool(
         re.fullmatch(
-            r"^[a-zA-Z_][a-zA-Z_0-9]*:\s*((-?\d+)|(\"[^\"]*\")|(\'[^\']*\')|(bf\s+\d+))$",
+            r"^[a-zA-Z_][a-zA-Z_0-9]*:\s*((-?\d+)|(\"[^\"]*\")|(\'[^\']*\')|([bB][fF]\s+\d+))$",
             value,
         )
     )
@@ -51,7 +51,7 @@ def is_str(value: str) -> bool:
 
 
 def is_bf(value: str) -> bool:
-    return bool(re.fullmatch(r"^bf\s+\d+$", value))
+    return bool(re.fullmatch(r"^[bB][fF]\s+\d+$", value))
 
 
 def is_opcode0(value: str) -> bool:
@@ -78,12 +78,12 @@ def translate_stage_1(
         if token == "":
             continue
 
-        if token == DATA_SECTION:
+        if token.lower() == DATA_SECTION:
             if data_mode or code_mode:
                 raise Exception(f"Wrong section on line {line_num}")
             data_mode = True
             continue
-        if token == CODE_SECTION:
+        if token.lower() == CODE_SECTION:
             if code_mode:
                 raise Exception(f"Wrong section on line {line_num}")
             code_mode = True
@@ -96,14 +96,14 @@ def translate_stage_1(
                 name: str
                 value: str
                 name, value = map(lambda s: s.strip(), token.split(":", maxsplit=1))
-                if name in labels:
+                if name.lower() in labels:
                     raise Exception(
                         f"Redefinition of label `{name}` on line {line_num}"
                     )
                 if is_int(value):
                     if MIN_SIGN <= int(value) <= MAX_SIGN:
-                        data[name] = int(value)
-                        labels[name] = position
+                        data[name.lower()] = int(value)
+                        labels[name.lower()] = position
                         position += 1
                     else:
                         raise Exception(
@@ -111,14 +111,14 @@ def translate_stage_1(
                         )
                 elif is_str(value):
                     pstr = [len(value) - 2] + [ord(c) for c in value[1:-1]]
-                    data[name] = pstr
-                    labels[name] = position
+                    data[name.lower()] = pstr
+                    labels[name.lower()] = position
                     position += len(pstr)
                 elif is_bf(value):
                     _, size = value.split(maxsplit=1)
                     if is_positive_int(size):
-                        data[name] = [0] * int(size)
-                        labels[name] = position
+                        data[name.lower()] = [0] * int(size)
+                        labels[name.lower()] = position
                         position += int(size)
                     else:
                         raise Exception(
@@ -136,11 +136,11 @@ def translate_stage_1(
                 raise Exception(f"Label inside data section on line {line_num}")
             elif code_mode:
                 label: str = token[:-1]
-                if label in labels:
+                if label.lower() in labels:
                     raise Exception(
                         f"Redefinition of label `{label}` on line {line_num}"
                     )
-                labels[label] = position
+                labels[label.lower()] = position
             else:
                 raise Exception(f"Label outside of any section on line {line_num}")
 
@@ -160,7 +160,7 @@ def translate_stage_1(
                     case Opcode.PUSH:
                         if is_label_name(arg):
                             code.append(opcode)
-                            code.append(arg)
+                            code.append(arg.lower())
                             position += 2
                         elif is_int(arg):
                             if MIN_SIGN <= int(arg) <= MAX_SIGN:
