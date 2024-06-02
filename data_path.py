@@ -174,5 +174,8 @@ class IOController:
     def write(self, port: int, value: int):
         if not self._connected_units[port]:
             raise Exception(f"No device connected to port {port}")
-        logging.debug("Output: writing `%s` (%d) on port %d", chr(value), value, port)
+        if value < 32 or value > 126:
+            logging.debug("Output: writing %d on port %d", value, port)
+        else:
+            logging.debug("Output: writing `%s` (%d) on port %d", chr(value), value, port)
         self._connected_units[port].write(value)
