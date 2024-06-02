@@ -1,0 +1,922 @@
+in_source: |-
+  ; cat
+
+  section data:
+      port:   1
+  section code:
+      ; in >> len, out << len, halt if len == 0
+      push    port        ; [port]
+      load                ; [1]
+      in                  ; [len]
+      dup                 ; [len, len]
+      push    port        ; [len, len, port]
+      load                ; [len, len, 1]
+      out                 ; [len]
+      dup                 ; [len, len]
+      push    break       ; [len, len, break]
+      swap                ; [len, break, len]
+      jz                  ; [len]
+
+  loop:
+      ; in >> chr, out << chr
+      push    port        ; [len, port]
+      load                ; [len, 1]
+      in                  ; [len, chr]
+      push    port        ; [len, chr, port]
+      load                ; [len, chr, 1]
+      out                 ; [len]
+
+      ; len--, halt if len == 0
+      dec                 ; [len--]
+      dup                 ; [len, len]
+      push    break       ; [len, len, break]
+      swap                ; [len, break, len]
+      jz                  ; [len]
+
+      ; loop
+      push    loop        ; [len, loop]
+      jmp                 ; [len]
+  break:
+      halt
+in_stdin: |-
+  Hello, world!
+out_code: !!binary |-
+  AgAAAAEAAAABAAAAAQAAAA0AAAAPAAAABAAAAAEAAAABAAAADQAAABAAAAAEAAAAAQAAACEAAAADAAAAEgAAAAEAAAABAAAADQAAAA8AAAABAAAAAQAAAA0AAAAQAAAABwAAAAQAAAABAAAAIQAAAAMAAAASAAAAAQAAABAAAAARAAAAHwAAAA==
+out_commented_code: |-
+  0	0000 0000 0000 0000 0000 0000 0000 0010 	start_address = 2
+  1	0000 0000 0000 0000 0000 0000 0000 0001 	port = 1
+  2	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  3	0000 0000 0000 0000 0000 0000 0000 0001 	port (1)
+  4	0000 0000 0000 0000 0000 0000 0000 1101 	LOAD
+  5	0000 0000 0000 0000 0000 0000 0000 1111 	IN
+  6	0000 0000 0000 0000 0000 0000 0000 0100 	DUP
+  7	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  8	0000 0000 0000 0000 0000 0000 0000 0001 	port (1)
+  9	0000 0000 0000 0000 0000 0000 0000 1101 	LOAD
+  10	0000 0000 0000 0000 0000 0000 0001 0000 	OUT
+  11	0000 0000 0000 0000 0000 0000 0000 0100 	DUP
+  12	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  13	0000 0000 0000 0000 0000 0000 0010 0001 	break (33)
+  14	0000 0000 0000 0000 0000 0000 0000 0011 	SWAP
+  15	0000 0000 0000 0000 0000 0000 0001 0010 	JZ
+  16	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  17	0000 0000 0000 0000 0000 0000 0000 0001 	port (1)
+  18	0000 0000 0000 0000 0000 0000 0000 1101 	LOAD
+  19	0000 0000 0000 0000 0000 0000 0000 1111 	IN
+  20	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  21	0000 0000 0000 0000 0000 0000 0000 0001 	port (1)
+  22	0000 0000 0000 0000 0000 0000 0000 1101 	LOAD
+  23	0000 0000 0000 0000 0000 0000 0001 0000 	OUT
+  24	0000 0000 0000 0000 0000 0000 0000 0111 	DEC
+  25	0000 0000 0000 0000 0000 0000 0000 0100 	DUP
+  26	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  27	0000 0000 0000 0000 0000 0000 0010 0001 	break (33)
+  28	0000 0000 0000 0000 0000 0000 0000 0011 	SWAP
+  29	0000 0000 0000 0000 0000 0000 0001 0010 	JZ
+  30	0000 0000 0000 0000 0000 0000 0000 0001 	PUSH
+  31	0000 0000 0000 0000 0000 0000 0001 0000 	loop (16)
+  32	0000 0000 0000 0000 0000 0000 0001 0001 	JMP
+  33	0000 0000 0000 0000 0000 0000 0001 1111 	HALT
+out_stdout: |
+  Translation successful
+  Source LoC: 39, Number of Instructions: 34
+  ============================================================
+  Output: Hello, world!
+  Ticks: 822, Instructions: 179
+out_log: |+
+  DEBUG    root:control_unit.py:118 
+  Tick: 0
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: PUSH 1
+  PC	MPC	AR	BR	TOS
+  2	1	2	0	0
+  DS: []
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 1
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  2	3	2	0	0
+  DS: []
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 2
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  3	4	2	0	0
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 3
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  3	5	3	0	0
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 4
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  4	0	3	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 5
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: LOAD
+  PC	MPC	AR	BR	TOS
+  4	1	4	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 6
+  MicroInstruction: LATCH_AR, SEL_AR_TOS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  4	32	4	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 7
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  4	33	1	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 8
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  5	0	1	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 9
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: IN
+  PC	MPC	AR	BR	TOS
+  5	1	5	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 10
+  MicroInstruction: LATCH_TOS, SEL_TOS_INPUT, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  5	39	5	0	1
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 11
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  6	0	5	0	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 12
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: DUP
+  PC	MPC	AR	BR	TOS
+  6	1	6	0	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 13
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  6	12	6	0	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 14
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  7	0	6	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 15
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: PUSH 1
+  PC	MPC	AR	BR	TOS
+  7	1	7	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 16
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  7	3	7	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 17
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  8	4	7	0	13
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 18
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  8	5	8	0	13
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 19
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  9	0	8	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 20
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: LOAD
+  PC	MPC	AR	BR	TOS
+  9	1	9	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 21
+  MicroInstruction: LATCH_AR, SEL_AR_TOS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  9	32	9	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 22
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  9	33	1	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 23
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  10	0	1	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 24
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: OUT
+  PC	MPC	AR	BR	TOS
+  10	1	10	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 25
+  MicroInstruction: OUT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  10	40	10	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:data_path.py:178 Output: writing 13 on port 1
+  DEBUG    root:control_unit.py:118 
+  Tick: 26
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  10	41	10	0	1
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 27
+  MicroInstruction: LATCH_TOS, SEL_TOS_DS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  10	42	10	0	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 28
+  MicroInstruction: DS_POP, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  10	43	10	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 29
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  11	0	10	0	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 30
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: DUP
+  PC	MPC	AR	BR	TOS
+  11	1	11	0	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 31
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  11	12	11	0	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 32
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  12	0	11	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 33
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: PUSH 33
+  PC	MPC	AR	BR	TOS
+  12	1	12	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 34
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  12	3	12	0	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 35
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  13	4	12	0	13
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 36
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  13	5	13	0	13
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 37
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  14	0	13	0	33
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 38
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: SWAP
+  PC	MPC	AR	BR	TOS
+  14	1	14	0	33
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 39
+  MicroInstruction: LATCH_BR, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  14	8	14	0	33
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 40
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  14	9	14	13	33
+  DS: [0, 13, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 41
+  MicroInstruction: DS_PUSH, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  14	10	14	13	33
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 42
+  MicroInstruction: LATCH_TOS, SEL_TOS_BR, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  14	11	14	13	33
+  DS: [0, 13, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 43
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  15	0	14	13	13
+  DS: [0, 13, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 44
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: JZ
+  PC	MPC	AR	BR	TOS
+  15	1	15	13	13
+  DS: [0, 13, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 45
+  MicroInstruction: LATCH_PC, SEL_PC_JZ, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  15	47	15	13	13
+  DS: [0, 13, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 46
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  16	48	15	13	13
+  DS: [0, 13, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 47
+  MicroInstruction: LATCH_TOS, SEL_TOS_DS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  16	49	15	13	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 48
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  16	50	15	13	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 49
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  16	0	15	13	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 50
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: PUSH 1
+  PC	MPC	AR	BR	TOS
+  16	1	16	13	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 51
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  16	3	16	13	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 52
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  17	4	16	13	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 53
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  17	5	17	13	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 54
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  18	0	17	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 55
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: LOAD
+  PC	MPC	AR	BR	TOS
+  18	1	18	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 56
+  MicroInstruction: LATCH_AR, SEL_AR_TOS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  18	32	18	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 57
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  18	33	1	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 58
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  19	0	1	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 59
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: IN
+  PC	MPC	AR	BR	TOS
+  19	1	19	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 60
+  MicroInstruction: LATCH_TOS, SEL_TOS_INPUT, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  19	39	19	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 61
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  20	0	19	13	72
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 62
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: PUSH 1
+  PC	MPC	AR	BR	TOS
+  20	1	20	13	72
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 63
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  20	3	20	13	72
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 64
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  21	4	20	13	72
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 65
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  21	5	21	13	72
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 66
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  22	0	21	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 67
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: LOAD
+  PC	MPC	AR	BR	TOS
+  22	1	22	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 68
+  MicroInstruction: LATCH_AR, SEL_AR_TOS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  22	32	22	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 69
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  22	33	1	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 70
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  23	0	1	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 71
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: OUT
+  PC	MPC	AR	BR	TOS
+  23	1	23	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 72
+  MicroInstruction: OUT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  23	40	23	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:data_path.py:180 Output: writing `H` (72) on port 1
+  DEBUG    root:control_unit.py:118 
+  Tick: 73
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  23	41	23	13	1
+  DS: [0, 13, 72]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 74
+  MicroInstruction: LATCH_TOS, SEL_TOS_DS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  23	42	23	13	1
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 75
+  MicroInstruction: DS_POP, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  23	43	23	13	13
+  DS: [0, 13]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 76
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  24	0	23	13	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 77
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: DEC
+  PC	MPC	AR	BR	TOS
+  24	1	24	13	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 78
+  MicroInstruction: ALU_SUM, ALU_RIGHT_OP_ZERO, ALU_DEC, LATCH_TOS, SEL_TOS_ALU, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  24	21	24	13	13
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 79
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  25	0	24	13	12
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 80
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: DUP
+  PC	MPC	AR	BR	TOS
+  25	1	25	13	12
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 81
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  25	12	25	13	12
+  DS: [0]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 82
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  26	0	25	13	12
+  DS: [0, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 83
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: PUSH 33
+  PC	MPC	AR	BR	TOS
+  26	1	26	13	12
+  DS: [0, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 84
+  MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  26	3	26	13	12
+  DS: [0, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 85
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  27	4	26	13	12
+  DS: [0, 12, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 86
+  MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  27	5	27	13	12
+  DS: [0, 12, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 87
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  28	0	27	13	33
+  DS: [0, 12, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 88
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: SWAP
+  PC	MPC	AR	BR	TOS
+  28	1	28	13	33
+  DS: [0, 12, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 89
+  MicroInstruction: LATCH_BR, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  28	8	28	13	33
+  DS: [0, 12, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 90
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  28	9	28	12	33
+  DS: [0, 12, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 91
+  MicroInstruction: DS_PUSH, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  28	10	28	12	33
+  DS: [0, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 92
+  MicroInstruction: LATCH_TOS, SEL_TOS_BR, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  28	11	28	12	33
+  DS: [0, 12, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 93
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  29	0	28	12	12
+  DS: [0, 12, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 94
+  MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
+  Instruction: JZ
+  PC	MPC	AR	BR	TOS
+  29	1	29	12	12
+  DS: [0, 12, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 95
+  MicroInstruction: LATCH_PC, SEL_PC_JZ, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  29	47	29	12	12
+  DS: [0, 12, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 96
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  30	48	29	12	12
+  DS: [0, 12, 33]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 97
+  MicroInstruction: LATCH_TOS, SEL_TOS_DS, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  30	49	29	12	12
+  DS: [0, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 98
+  MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_ZERO
+  PC	MPC	AR	BR	TOS
+  30	50	29	12	12
+  DS: [0, 12]
+  RS: []
+
+  DEBUG    root:control_unit.py:118 
+  Tick: 99
+  MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
+  PC	MPC	AR	BR	TOS
+  30	0	29	12	12
+  DS: [0]
+  RS: []
+
+  DEBUG    root:data_path.py:180 Output: writing `e` (101) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `l` (108) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `l` (108) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `o` (111) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `,` (44) on port 1
+  DEBUG    root:data_path.py:180 Output: writing ` ` (32) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `w` (119) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `o` (111) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `r` (114) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `l` (108) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `d` (100) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `!` (33) on port 1

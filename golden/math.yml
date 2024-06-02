@@ -40,7 +40,7 @@ out_stdout: |
   Translation successful
   Source LoC: 17, Number of Instructions: 16
   ============================================================
-  Output: []
+  Output: 
   Ticks: 37, Instructions: 9
 out_log: |+
   DEBUG    root:control_unit.py:118 

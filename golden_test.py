@@ -11,7 +11,7 @@ import translator
 
 
 @pytest.mark.golden_test("golden/*.yml")
-def test_translator_and_machine(golden, caplog, limit=200000):
+def test_translator_and_machine(golden, caplog, tick_limit=200000, debug_limit=100):
     caplog.set_level(logging.DEBUG)
 
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -28,7 +28,7 @@ def test_translator_and_machine(golden, caplog, limit=200000):
         with contextlib.redirect_stdout(io.StringIO()) as stdout:
             translator.main(source, target)
             print("============================================================")
-            main.main(target, input_stream, limit=limit, char_output=False, debug_logging=True)
+            main.main(target, input_stream, tick_limit=tick_limit, debug_limit=debug_limit, char_output=True, debug_logging=True)
 
         with open(target, mode="rb") as f:
             code = f.read()
