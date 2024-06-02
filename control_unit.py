@@ -38,7 +38,7 @@ class ControlUnit:
             Opcode.IN: 39,
             Opcode.OUT: 40,
             Opcode.JMP: 44,
-            Opcode.JZ: 46,
+            Opcode.JZ: 47,
             Opcode.CALL: 51,
             Opcode.RET: 55,
             Opcode.HALT: 57,
