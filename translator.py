@@ -237,7 +237,7 @@ def translate(text: str) -> Tuple[list[int], str]:
 
 def main(source_name: str, target_name: str) -> None:
     with open(source_name, encoding="utf-8") as file:
-        text: str = file.read().lower()
+        text: str = file.read()
 
     code, commented_code = translate(text)
 

@@ -44,12 +44,12 @@ in_source: |-
       halt
 in_stdin: |-
 out_code: !!binary |-
-  EAAAAAEAAAANAAAAaAAAAGUAAABsAAAAbAAAAG8AAAAsAAAAIAAAAHcAAABvAAAAcgAAAGwAAABkAAAAIQAAAAEAAAACAAAADQAAAAQAAAABAAAAAQAAAA0AAAAQAAAABAAAAAEAAAAxAAAAAwAAABIAAAABAAAAAgAAAAYAAAAEAAAADQAAAAEAAAABAAAADQAAABAAAAADAAAABwAAAAQAAAABAAAAMQAAAAMAAAASAAAAAwAAAAEAAAAfAAAAEQAAAB8AAAA=
+  EAAAAAEAAAANAAAASAAAAGUAAABsAAAAbAAAAG8AAAAsAAAAIAAAAHcAAABvAAAAcgAAAGwAAABkAAAAIQAAAAEAAAACAAAADQAAAAQAAAABAAAAAQAAAA0AAAAQAAAABAAAAAEAAAAxAAAAAwAAABIAAAABAAAAAgAAAAYAAAAEAAAADQAAAAEAAAABAAAADQAAABAAAAADAAAABwAAAAQAAAABAAAAMQAAAAMAAAASAAAAAwAAAAEAAAAfAAAAEQAAAB8AAAA=
 out_commented_code: |-
   0	0000 0000 0000 0000 0000 0000 0001 0000 	start_address = 16
   1	0000 0000 0000 0000 0000 0000 0000 0001 	port = 1
   2	0000 0000 0000 0000 0000 0000 0000 1101 	hello : 13
-  3	0000 0000 0000 0000 0000 0000 0110 1000 	       `h`
+  3	0000 0000 0000 0000 0000 0000 0100 1000 	       `H`
   4	0000 0000 0000 0000 0000 0000 0110 0101 	       `e`
   5	0000 0000 0000 0000 0000 0000 0110 1100 	       `l`
   6	0000 0000 0000 0000 0000 0000 0110 1100 	       `l`
@@ -100,7 +100,7 @@ out_stdout: |
   Translation successful
   Source LoC: 43, Number of Instructions: 50
   ============================================================
-  Output: hello, world!
+  Output: Hello, world!
   Ticks: 948, Instructions: 204
 out_log: |+
   DEBUG    root:control_unit.py:118 
@@ -610,7 +610,7 @@ out_log: |+
   Tick: 61
   MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
-  34	0	3	13	104
+  34	0	3	13	72
   DS: [0, 13, 3]
   RS: []
 
@@ -619,7 +619,7 @@ out_log: |+
   MicroInstruction: LATCH_MPC, SEL_MPC_OPCODE
   Instruction: PUSH 1
   PC	MPC	AR	BR	TOS
-  34	1	34	13	104
+  34	1	34	13	72
   DS: [0, 13, 3]
   RS: []
 
@@ -627,7 +627,7 @@ out_log: |+
   Tick: 63
   MicroInstruction: DS_PUSH, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
-  34	3	34	13	104
+  34	3	34	13	72
   DS: [0, 13, 3]
   RS: []
 
@@ -635,16 +635,16 @@ out_log: |+
   Tick: 64
   MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
-  35	4	34	13	104
-  DS: [0, 13, 3, 104]
+  35	4	34	13	72
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
   Tick: 65
   MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
   PC	MPC	AR	BR	TOS
-  35	5	35	13	104
-  DS: [0, 13, 3, 104]
+  35	5	35	13	72
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -652,7 +652,7 @@ out_log: |+
   MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
   36	0	35	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -661,7 +661,7 @@ out_log: |+
   Instruction: LOAD
   PC	MPC	AR	BR	TOS
   36	1	36	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -669,7 +669,7 @@ out_log: |+
   MicroInstruction: LATCH_AR, SEL_AR_TOS, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
   36	32	36	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -677,7 +677,7 @@ out_log: |+
   MicroInstruction: LATCH_TOS, SEL_TOS_MEMORY, LATCH_PC, SEL_PC_NEXT, LATCH_MPC, SEL_MPC_ZERO
   PC	MPC	AR	BR	TOS
   36	33	1	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -685,7 +685,7 @@ out_log: |+
   MicroInstruction: LATCH_AR, SEL_AR_PC, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
   37	0	1	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -694,7 +694,7 @@ out_log: |+
   Instruction: OUT
   PC	MPC	AR	BR	TOS
   37	1	37	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
@@ -702,16 +702,16 @@ out_log: |+
   MicroInstruction: OUT, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
   37	40	37	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
-  DEBUG    root:data_path.py:180 Output: writing `h` (104) on port 1
+  DEBUG    root:data_path.py:180 Output: writing `H` (72) on port 1
   DEBUG    root:control_unit.py:118 
   Tick: 73
   MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
   PC	MPC	AR	BR	TOS
   37	41	37	13	1
-  DS: [0, 13, 3, 104]
+  DS: [0, 13, 3, 72]
   RS: []
 
   DEBUG    root:control_unit.py:118 
