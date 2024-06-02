@@ -1,17 +1,18 @@
+import logging
 from collections import deque
 
 import control_unit as cu
 from uarch import Signal
-from isa import Opcode
+from isa import Opcode, MEMORY_SIZE
 
 
 class DataPath:
-    def __init__(self, memory_size: int, program: list, io_controller: 'IOController') -> None:
+    def __init__(self, program: list, io_controller: 'IOController') -> None:
         self.control_unit: cu.ControlUnit
         self._alu: ALU = ALU(self)
 
-        self._memory_size: int = memory_size
-        self._memory: list = [Opcode.NOP] * memory_size
+        self._memory_size: int = MEMORY_SIZE
+        self._memory: list = [Opcode.NOP] * MEMORY_SIZE
         for index, _ in enumerate(program):
             self._memory[index] = program[index]
 
@@ -173,4 +174,5 @@ class IOController:
     def write(self, port: int, value: int):
         if not self._connected_units[port]:
             raise Exception(f"No device connected to port {port}")
+        logging.debug("Output: writing `%s` (%d) on port %d", chr(value), value, port)
         self._connected_units[port].write(value)
