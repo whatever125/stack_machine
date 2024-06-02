@@ -1,5 +1,6 @@
 import logging
 from collections import deque
+from typing import Tuple
 
 from isa import Opcode
 from uarch import Signal, MICROPROGRAM
@@ -147,9 +148,12 @@ class ControlUnit:
 
         return "\n" + "\n".join(data) + "\n"
 
-    def run_simulation(self, tick_limit: int) -> int:
+    def run_simulation(self, tick_limit: int) -> Tuple[int, int]:
+        instructions = 0
         try:
             while True:
+                if self._micro_program_counter == 0:
+                    instructions += 1
                 self._dispatch_micro_instruction()
                 self._print_state()
                 self._tick()
@@ -158,4 +162,4 @@ class ControlUnit:
         except StopIteration:
             pass
 
-        return self._current_tick
+        return self._current_tick, instructions

@@ -30,7 +30,7 @@ def main(code_file: str, input_file: str | None, limit: int, char_output: bool, 
     control_unit: cu.ControlUnit = cu.ControlUnit(data_path=data_path)
     data_path.control_unit = control_unit
 
-    ticks = control_unit.run_simulation(tick_limit=limit)
+    ticks, instructions = control_unit.run_simulation(tick_limit=limit)
 
     io_controller.disconnect(port=1)
 
@@ -38,14 +38,14 @@ def main(code_file: str, input_file: str | None, limit: int, char_output: bool, 
         print(f"Output: {io_unit.get_str_output()}")
     else:
         print(f"Output: {io_unit.get_list_output()}")
-    print(f"Ticks: {ticks}")
+    print(f"Ticks: {ticks}, Instructions: {instructions}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Stack processor simulation")
     parser.add_argument("code_file", help="Binary code file name")
     parser.add_argument("input_file", nargs="?", help="Input file name (optional)")
-    parser.add_argument("-l", "--limit", type=int, default=200000, help="Tick limit (default 200000)")
+    parser.add_argument("-l", "--limit", type=int, default=200000, help="Tick limit (default - 200000)")
     parser.add_argument("-c", "--char", action='store_true', help="Char output (default - list[int])")
     parser.add_argument("-d", "--debug", action='store_true', help="Debug logging (default - info)")
 
