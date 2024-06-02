@@ -147,12 +147,14 @@ class ControlUnit:
 
         return "\n" + "\n".join(data) + "\n"
 
-    def run_simulation(self) -> int:
+    def run_simulation(self, tick_limit: int) -> int:
         try:
             while True:
                 self._dispatch_micro_instruction()
                 self._print_state()
                 self._tick()
+                if self._current_tick > tick_limit:
+                    raise Exception("Exceeded tick limit")
         except StopIteration:
             pass
 
