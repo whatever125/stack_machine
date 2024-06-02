@@ -3,7 +3,7 @@ from collections import deque
 
 import control_unit as cu
 from uarch import Signal
-from isa import Opcode, MEMORY_SIZE
+from isa import Opcode, MEMORY_SIZE, MIN_SIGN, MAX_SIGN
 
 
 class DataPath:
@@ -127,7 +127,14 @@ class ALU:
         elif Signal.ALU_DEC in micro_instruction:
             result -= 1
 
-        return result
+        return self._handle_overflow(result)
+
+    def _handle_overflow(self, value: int) -> int:
+        if value > MAX_SIGN:
+            value %= MAX_SIGN
+        elif value < MIN_SIGN:
+            value %= abs(MIN_SIGN)
+        return value
 
 
 class IOUnit:

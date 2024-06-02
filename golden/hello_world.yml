@@ -296,7 +296,7 @@ out_log: |
   DS: [0, 13, 13]
   RS: []
 
-  DEBUG    root:data_path.py:178 Output: writing 13 on port 1
+  DEBUG    root:data_path.py:185 Output: writing 13 on port 1
   DEBUG    root:control_unit.py:118 
   Tick: 23
   MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
@@ -708,7 +708,7 @@ out_log: |
   DS: [0, 13, 3, 72]
   RS: []
 
-  DEBUG    root:data_path.py:180 Output: writing `H` (72) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `H` (72) on port 1
   DEBUG    root:control_unit.py:118 
   Tick: 73
   MicroInstruction: DS_POP, LATCH_MPC, SEL_MPC_NEXT
@@ -930,15 +930,15 @@ out_log: |
   DS: [0, 3, 12, 49]
   RS: []
 
-  DEBUG    root:data_path.py:180 Output: writing `e` (101) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `l` (108) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `l` (108) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `o` (111) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `,` (44) on port 1
-  DEBUG    root:data_path.py:180 Output: writing ` ` (32) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `w` (119) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `o` (111) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `r` (114) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `l` (108) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `d` (100) on port 1
-  DEBUG    root:data_path.py:180 Output: writing `!` (33) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `e` (101) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `l` (108) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `l` (108) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `o` (111) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `,` (44) on port 1
+  DEBUG    root:data_path.py:187 Output: writing ` ` (32) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `w` (119) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `o` (111) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `r` (114) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `l` (108) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `d` (100) on port 1
+  DEBUG    root:data_path.py:187 Output: writing `!` (33) on port 1
