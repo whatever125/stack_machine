@@ -5,7 +5,7 @@ in_source: |-
       a:      3
       b:      -5
       c:      2
-  
+
   section code:       ; (a + b) * c
       start:
           push    c
@@ -18,9 +18,10 @@ in_source: |-
           mul
       break:
           halt
-in_stdin: |-
-out_code: !!binary |-
-  BAAAAAMAAAD7////AgAAAAEAAAADAAAADQAAAAEAAAACAAAADQAAAAEAAAABAAAADQAAAAgAAAAKAAAAHwAAAA==
+in_stdin: |
+out_code: !!binary |
+  BAAAAAMAAAD7////AgAAAAEAAAADAAAADQAAAAEAAAACAAAADQAAAAEAAAABAAAADQAAAAgAAAAK
+  AAAAHwAAAA==
 out_commented_code: |-
   0	0000 0000 0000 0000 0000 0000 0000 0100 	start_address = 4
   1	0000 0000 0000 0000 0000 0000 0000 0011 	a = 3
@@ -350,3 +351,4 @@ out_log: |+
   DS: [0]
   RS: []
 
+...

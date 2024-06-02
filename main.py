@@ -7,7 +7,7 @@ import control_unit as cu
 import data_path as dp
 
 
-def main(code_file: str, input_file: str | None, tick_limit: int, char_output: bool, debug_logging: bool, debug_limit: int) -> None:
+def main(code_file: str, input_file: str | None, tick_limit: int, char_output: bool, debug_logging: bool, debug_limit: int | None) -> None:
     logging.getLogger().setLevel(logging.DEBUG if debug_logging else logging.INFO)
 
     code = read_code(code_file)

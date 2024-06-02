@@ -148,7 +148,7 @@ class ControlUnit:
 
         return "\n" + "\n".join(data) + "\n"
 
-    def run_simulation(self, tick_limit: int, debug_limit: int) -> Tuple[int, int]:
+    def run_simulation(self, tick_limit: int, debug_limit: int | None) -> Tuple[int, int]:
         instructions = 0
         try:
             while True:
@@ -156,10 +156,13 @@ class ControlUnit:
                     instructions += 1
                 self._dispatch_micro_instruction()
 
-                if self._current_tick < debug_limit:
+                if debug_limit is not None:
+                    if self._current_tick < debug_limit:
+                        self._print_state()
+                    elif self._current_tick < debug_limit:
+                        logging.warning("Exceeded debug limit")
+                else:
                     self._print_state()
-                elif self._current_tick < debug_limit:
-                    logging.warning("Exceeded debug limit")
 
                 self._tick()
 
