@@ -66,11 +66,11 @@ def read_code(filename: str) -> list[Opcode | int]:
                     value: int = struct.unpack("i", data)[0]
                     code.append(value)
                 else:
-                    value: int = struct.unpack("i", data)[0]
+                    value = struct.unpack("i", data)[0]
                     opcode = Opcode(value)
                     code.append(opcode)
             else:
-                value: int = struct.unpack("i", data)[0]
+                value = struct.unpack("i", data)[0]
                 code.append(value)
             data = file.read(4)
     return code

@@ -149,7 +149,7 @@ class IOUnit:
         return self._output_buffer.append(value)
 
     def get_str_output(self) -> str:
-        output: list[chr] = []
+        output: list[str] = []
         i = 0
         while i < len(self._output_buffer):
             length = self._output_buffer[i]

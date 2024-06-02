@@ -17,7 +17,7 @@ def main(code_file: str, input_file: str | None, tick_limit: int, char_output: b
     else:
         with open(input_file, encoding="utf-8") as file:
             input_text: str = file.read()
-        input_tokens: deque = deque(map(ord, input_text))
+        input_tokens = deque(map(ord, input_text))
         input_tokens.appendleft(len(input_tokens))
 
     io_unit = dp.IOUnit(input_buffer=input_tokens)
