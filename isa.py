@@ -10,38 +10,38 @@ MAX_SIGN = 2 ** (BITS - 1) - 1
 
 class Opcode(IntEnum):
     # no op
-    NOP = 0x00000
+    NOP = 0b00000
 
     # stack ops
-    PUSH = 0x00001
-    POP = 0x00010
-    SWAP = 0x00011
-    DUP = 0x00100
-    OVER = 0x00101
+    PUSH = 0b00001
+    POP = 0b00010
+    SWAP = 0b00011
+    DUP = 0b00100
+    OVER = 0b00101
 
     # math ops
-    INC = 0x00110
-    DEC = 0x00111
-    ADD = 0x01000
-    SUB = 0x01001
-    MUL = 0x01010
-    DIV = 0x01011
-    MOD = 0x01100
+    INC = 0b00110
+    DEC = 0b00111
+    ADD = 0b01000
+    SUB = 0b01001
+    MUL = 0b01010
+    DIV = 0b01011
+    MOD = 0b01100
 
     # memory ops
-    LOAD = 0x01101
-    SAVE = 0x01110
+    LOAD = 0b01101
+    SAVE = 0b01110
 
     # io ops
-    IN = 0x01111
-    OUT = 0x10000
+    IN = 0b01111
+    OUT = 0b10000
 
     # flow ops
-    JMP = 0x10001
-    JZ = 0x10010
-    CALL = 0x10011
-    RET = 0x10100
-    HALT = 0x11111
+    JMP = 0b10001
+    JZ = 0b10010
+    CALL = 0b10011
+    RET = 0b10100
+    HALT = 0b11111
 
 
 def get_opcode_names() -> list[str]:
