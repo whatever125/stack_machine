@@ -1,4 +1,4 @@
-; print "Hello, world!"
+; hello_world
 
 section data:
     port:   1

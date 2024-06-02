@@ -1,4 +1,4 @@
-; print "Hello, {username}"
+; hello_username
 
 section data:
     port:       1

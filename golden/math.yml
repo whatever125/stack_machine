@@ -1,4 +1,6 @@
 in_source: |-
+  ; math
+
   section data:
       a:      3
       b:      -5
@@ -18,7 +20,7 @@ in_source: |-
           halt
 in_stdin: |-
 out_code: !!binary |-
-    BAAAAAMAAAD7////AgAAAAEAAAADAAAADQAAAAEAAAACAAAADQAAAAEAAAABAAAADQAAAAgAAAAKAAAAHwAAAA==
+  BAAAAAMAAAD7////AgAAAAEAAAADAAAADQAAAAEAAAACAAAADQAAAAEAAAABAAAADQAAAAgAAAAKAAAAHwAAAA==
 out_commented_code: |-
   0	0000 0000 0000 0000 0000 0000 0000 0100 	start_address = 4
   1	0000 0000 0000 0000 0000 0000 0000 0011 	a = 3
@@ -38,7 +40,7 @@ out_commented_code: |-
   15	0000 0000 0000 0000 0000 0000 0001 1111 	HALT
 out_stdout: |
   Translation successful
-  Source LoC: 17, Number of Instructions: 16
+  Source LoC: 19, Number of Instructions: 16
   ============================================================
   Output: 
   Ticks: 37, Instructions: 9

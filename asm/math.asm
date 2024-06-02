@@ -1,3 +1,5 @@
+; math
+
 section data:
     a:      3
     b:      -5
