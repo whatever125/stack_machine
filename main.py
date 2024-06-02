@@ -8,7 +8,7 @@ import data_path as dp
 
 
 def main(code_file_name: str, input_file_name: str) -> None:
-    logging.basicConfig(level=logging.WARN, stream=sys.stdout)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
     code: list = read_code(code_file_name)
 
@@ -21,8 +21,6 @@ def main(code_file_name: str, input_file_name: str) -> None:
     io_controller = dp.IOController()
     io_controller.connect(port=1, unit=io_unit)
 
-    logging.debug(code)
-    logging.debug(input_tokens)
     data_path: dp.DataPath = dp.DataPath(
         memory_size=1024,
         program=code,
@@ -34,7 +32,7 @@ def main(code_file_name: str, input_file_name: str) -> None:
 
     io_controller.disconnect(port=1)
 
-    print(f"Output: {io_unit.get_output()}")
+    print(f"Output: {io_unit.get_list_output()}")
     print(f"Ticks: {ticks}")
 
 

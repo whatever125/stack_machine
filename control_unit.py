@@ -12,7 +12,7 @@ class ControlUnit:
         self._program_counter: int = self._data_path.start_address
         self._micro_program_counter: int = 0
         self._current_tick: int = 0
-        self._microprogram: list = MICROPROGRAM
+        self._microprogram = MICROPROGRAM
         self._return_stack: deque[int] = deque()
 
     def _tick(self) -> None:
@@ -49,7 +49,6 @@ class ControlUnit:
 
     def _dispatch_micro_instruction(self):
         micro_instruction = self._microprogram[self._micro_program_counter]
-        logging.debug(micro_instruction)
         for signal in micro_instruction:
             match signal:
                 case Signal.DS_PUSH:
@@ -106,7 +105,6 @@ class ControlUnit:
         elif Signal.SEL_MPC_OPCODE in micro_instruction:
             data = self._data_path.read()
             opcode = Opcode(data)
-            logging.info(opcode.name.upper())
             self._micro_program_counter = self._opcode_to_mpc(opcode)
         elif Signal.SEL_MPC_NEXT in micro_instruction:
             self._micro_program_counter += 1
@@ -115,36 +113,47 @@ class ControlUnit:
     def program_counter(self):
         return self._program_counter
 
-    def print_state(self):
-        logging.debug("\t".join(["PC", "MPC", "AR", "BR", "TOS", "NOS"]))
-        logging.debug(
-            "\t".join(
-                map(
-                    str,
-                    [
-                        self.program_counter,
-                        self._micro_program_counter,
-                        self._data_path.address_register,
-                        self._data_path.buffer_register,
-                        self._data_path.tos,
-                        " ".join(map(str, list(self._data_path.data_stack)[::-1])),
-                    ],
-                )
-            )
-        )
-        logging.debug("")
+    def _print_state(self):
+        logging.debug(self)
+
+    def __repr__(self) -> str:
+        tick = f"Tick: {self._current_tick}"
+
+        micro_instruction = self._microprogram[self._micro_program_counter]
+        micro_instruction_repr = f"MicroInstruction: {", ".join(map(lambda signal: signal.name.upper(), micro_instruction))}"
+
+        registers = "\t".join(["PC", "MPC", "AR", "BR", "TOS"])
+        values = "\t".join(map(str, [
+            self.program_counter,
+            self._micro_program_counter,
+            self._data_path.address_register,
+            self._data_path.buffer_register,
+            self._data_path.tos
+        ]))
+
+        ds = f"DS: [{', '.join(map(str, self._data_path.data_stack))}]"
+        rs = f"RS: [{', '.join(map(str, self._return_stack))}]"
+
+        data = [tick, micro_instruction_repr, registers, values, ds, rs]
+
+        if self._micro_program_counter == 1:
+            opcode = self._data_path.memory[self._program_counter]
+            if opcode in [Opcode.PUSH]:
+                arg = self._data_path.memory[self._program_counter + 1]
+                opcode_repr = f"Instruction: {opcode.name.upper()} {arg}"
+            else:
+                opcode_repr = f"Instruction: {opcode.name.upper()}"
+            data.insert(2, opcode_repr)
+
+        return "\n" + "\n".join(data) + "\n"
 
     def run_simulation(self) -> int:
-        while True:
-            try:
-                self.print_state()
+        try:
+            while True:
                 self._dispatch_micro_instruction()
+                self._print_state()
                 self._tick()
-            except StopIteration:
-                logging.error("HALT")
-                break
-            except EOFError:
-                logging.error("Input buffer is empty!")
-                break
+        except StopIteration:
+            pass
 
         return self._current_tick

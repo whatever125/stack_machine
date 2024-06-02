@@ -90,6 +90,10 @@ class DataPath:
     def start_address(self):
         return self._memory[0]
 
+    @property
+    def memory(self):
+        return self._memory
+
 
 class ALU:
     def __init__(self, dp: DataPath):
@@ -136,7 +140,7 @@ class IOUnit:
     def write(self, value: int) -> None:
         return self._output_buffer.append(value)
 
-    def get_output(self) -> str:
+    def get_str_output(self) -> str:
         output: list[chr] = []
         i = 0
         while i < len(self._output_buffer):
@@ -146,6 +150,9 @@ class IOUnit:
                 output.append(chr(self._output_buffer[i]))
             i += 1
         return ''.join(output)
+
+    def get_list_output(self) -> list[int]:
+        return list(self._output_buffer)
 
 
 class IOController:
