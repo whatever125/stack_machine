@@ -7,7 +7,7 @@ from isa import Opcode, MEMORY_SIZE, MIN_SIGN, MAX_SIGN
 
 
 class DataPath:
-    def __init__(self, program: list, io_controller: 'IOController') -> None:
+    def __init__(self, program: list, io_controller: "IOController") -> None:
         self.control_unit: cu.ControlUnit
         self._alu: ALU = ALU(self)
 
@@ -157,7 +157,7 @@ class IOUnit:
                 i += 1
                 output.append(chr(self._output_buffer[i]))
             i += 1
-        return ''.join(output)
+        return "".join(output)
 
     def get_list_output(self) -> list[int]:
         return list(self._output_buffer)
@@ -184,5 +184,7 @@ class IOController:
         if value < 32 or value > 126:
             logging.debug("Output: writing %d on port %d", value, port)
         else:
-            logging.debug("Output: writing `%s` (%d) on port %d", chr(value), value, port)
+            logging.debug(
+                "Output: writing `%s` (%d) on port %d", chr(value), value, port
+            )
         self._connected_units[port].write(value)

@@ -1,5 +1,5 @@
 import struct
-from enum import IntEnum, auto
+from enum import IntEnum
 
 
 MEMORY_SIZE = 2048

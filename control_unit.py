@@ -124,13 +124,18 @@ class ControlUnit:
         micro_instruction_repr = f"MicroInstruction: {", ".join(map(lambda signal: signal.name.upper(), micro_instruction))}"
 
         registers = "\t".join(["PC", "MPC", "AR", "BR", "TOS"])
-        values = "\t".join(map(str, [
-            self.program_counter,
-            self._micro_program_counter,
-            self._data_path.address_register,
-            self._data_path.buffer_register,
-            self._data_path.tos
-        ]))
+        values = "\t".join(
+            map(
+                str,
+                [
+                    self.program_counter,
+                    self._micro_program_counter,
+                    self._data_path.address_register,
+                    self._data_path.buffer_register,
+                    self._data_path.tos,
+                ],
+            )
+        )
 
         ds = f"DS: [{', '.join(map(str, self._data_path.data_stack))}]"
         rs = f"RS: [{', '.join(map(str, self._return_stack))}]"
@@ -148,7 +153,9 @@ class ControlUnit:
 
         return "\n" + "\n".join(data) + "\n"
 
-    def run_simulation(self, tick_limit: int, debug_limit: int | None) -> Tuple[int, int]:
+    def run_simulation(
+        self, tick_limit: int, debug_limit: int | None
+    ) -> Tuple[int, int]:
         instructions = 0
         try:
             while True:
