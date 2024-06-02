@@ -28,13 +28,13 @@ def test_translator_and_machine(golden, caplog, tick_limit=200000, debug_limit=1
         with contextlib.redirect_stdout(io.StringIO()) as stdout:
             translator.main(source, target)
             print("============================================================")
+            first_line = golden["in_source"].splitlines()[0]
             char_output_test = ["; cat", "; hello_username", "; hello_world"]
-            main.main(target, input_stream, tick_limit=tick_limit, debug_limit=debug_limit, char_output=golden["in_source"] in char_output_test, debug_logging=True)
+            main.main(target, input_stream, tick_limit=tick_limit, debug_limit=debug_limit, char_output=(first_line in char_output_test), debug_logging=True)
 
         with open(target, mode="rb") as f:
             code = f.read()
             print(base64.b64encode(code).decode('ascii'))
-            # print(code)
 
         with open(commented_target, encoding="utf-8") as f:
             commented_code = f.read()
