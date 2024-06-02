@@ -34,7 +34,6 @@ def test_translator_and_machine(golden, caplog, tick_limit=200000, debug_limit=1
 
         with open(target, mode="rb") as f:
             code = f.read()
-            print(base64.b64encode(code).decode('ascii'))
 
         with open(commented_target, encoding="utf-8") as f:
             commented_code = f.read()
